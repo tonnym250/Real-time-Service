@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real Time Service Delivery System - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #18201d;
+      --text: #2b3430;
+      --muted: #6f7a74;
+      --quiet: #8a948f;
+      --bg: #f5f7f4;
+      --panel: #ffffff;
+      --panel-soft: #fbfcfa;
+      --nav: #17231f;
+      --nav-2: #21322d;
+      --line: #dfe5df;
+      --line-strong: #ccd5ce;
+      --amber: #d98a12;
+      --amber-bg: #fff3d8;
+      --green: #168a5b;
+      --green-bg: #e5f6ee;
+      --teal: #128678;
+      --teal-bg: #e1f4f1;
+      --red: #c2413b;
+      --red-bg: #fde9e8;
+      --idle: #69736e;
+      --idle-bg: #eef1ee;
+      --shadow: 0 18px 48px rgba(27, 41, 35, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      display: grid;
+      min-height: 100vh;
+      grid-template-columns: 264px minmax(0, 1fr);
+      background:
+        linear-gradient(90deg, var(--nav) 0 264px, transparent 264px),
+        var(--bg);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+      padding: 24px 20px;
+      color: #f3f7f4;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-icon {
+      display: inline-grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: #f7b64b;
+      color: #17231f;
+      font-weight: 800;
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    .brand-title h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1.15rem;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .brand-title p {
+      margin: 4px 0 0;
+      color: rgba(243, 247, 244, 0.66);
+      font-size: 0.82rem;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: rgba(243, 247, 244, 0.72);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      text-decoration: none;
+    }
+
+    .nav-symbol {
+      display: inline-grid;
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f7b64b;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .connection-card {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: var(--nav-2);
+    }
+
+    .connection-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .connection-label {
+      color: rgba(243, 247, 244, 0.64);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .connection-state {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      color: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--quiet);
+    }
+
+    .dot.connected {
+      background: #2ed39d;
+      box-shadow: 0 0 0 6px rgba(46, 211, 157, 0.12);
+    }
+
+    .dot.error {
+      background: #ff8279;
+      box-shadow: 0 0 0 6px rgba(255, 130, 121, 0.12);
+    }
+
+    .dot.reconnecting {
+      background: #f7b64b;
+      box-shadow: 0 0 0 6px rgba(247, 182, 75, 0.12);
+    }
+
+    .last-sync {
+      color: rgba(243, 247, 244, 0.62);
+      font-size: 0.8rem;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 0 auto 20px;
+      max-width: 1280px;
+    }
+
+    .page-heading {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .page-heading h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      max-width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--text);
+      font-size: 0.86rem;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(27, 41, 35, 0.04);
+    }
+
+    .icon-button {
+      display: inline-grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(27, 41, 35, 0.04);
+      transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+    }
+
+    .icon-button:hover {
+      border-color: var(--line-strong);
+      background: var(--panel-soft);
+      transform: translateY(-1px);
+    }
+
+    .error-banner {
+      display: none;
+      max-width: 1280px;
+      margin: 0 auto 18px;
+      padding: 12px 14px;
+      border: 1px solid rgba(194, 65, 59, 0.24);
+      border-radius: var(--radius);
+      background: var(--red-bg);
+      color: var(--red);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .error-banner.visible {
+      display: block;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      max-width: 1100px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .primary-column {
+      display: grid;
+      align-content: start;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 6px;
+    }
+
+    .kpi {
+      min-width: 0;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: 0 8px 30px rgba(27, 41, 35, 0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .kpi span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .kpi strong {
+      display: block;
+      margin-top: 2px;
+      color: var(--ink);
+      font-size: 1.6rem;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .kpi small {
+      display: block;
+      margin-top: 6px;
+      color: var(--quiet);
+      font-size: 0.78rem;
+    }
+
+    .kpi.request strong {
+      color: var(--amber);
+    }
+
+    .kpi.served strong {
+      color: var(--green);
+    }
+
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 60px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title {
+      min-width: 0;
+    }
+
+    .panel-title h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .panel-title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .tables-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      padding: 18px;
+      align-items: start;
+    }
+
+    .table-card {
+      display: grid;
+      min-width: 0;
+      min-height: 200px;
+      align-content: start;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-left-width: 6px;
+      border-radius: 12px;
+      background: var(--panel-soft);
+      transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease;
+    }
+
+    .table-card.waiting {
+      border-color: rgba(217, 138, 18, 0.38);
+      border-left-color: var(--amber);
+      background: linear-gradient(180deg, #fffaf0 0%, #ffffff 100%);
+    }
+
+    .table-card.served {
+      border-color: rgba(22, 138, 91, 0.3);
+      border-left-color: var(--green);
+      background: linear-gradient(180deg, #f2fbf6 0%, #ffffff 100%);
+    }
+
+    .table-card.idle {
+      border-left-color: #9aa39e;
+    }
+
+    .table-card:hover {
+      box-shadow: 0 14px 30px rgba(27, 41, 35, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .table-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .table-name {
+      margin: 0;
+      color: var(--ink);
+      font-size: 1.2rem;
+      line-height: 1.15;
+    }
+
+    .table-subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .state-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      max-width: 130px;
+      min-height: 28px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .state-badge.waiting {
+      background: var(--amber-bg);
+      color: #9c5d04;
+    }
+
+    .state-badge.served {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .state-badge.idle {
+      background: var(--idle-bg);
+      color: var(--idle);
+    }
+
+    .state-dot {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .table-signal {
+      display: grid;
+      gap: 8px;
+    }
+
+    .signal-bar {
+      position: relative;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e7ece8;
+    }
+
+    .signal-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--idle);
+    }
+
+    .table-card.waiting .signal-fill {
+      width: 100%;
+      background: var(--amber);
+    }
+
+    .table-card.served .signal-fill {
+      width: 76%;
+      background: var(--green);
+    }
+
+    .table-card.idle .signal-fill {
+      width: 36%;
+    }
+
+    .table-meta {
+      display: grid;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .meta-label {
+      color: var(--quiet);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .meta-value {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      color: var(--text);
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .filter-tabs {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f1f4f1;
+    }
+
+    .filter-tab {
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .filter-tab.active {
+      background: var(--panel);
+      color: var(--ink);
+      box-shadow: 0 4px 12px rgba(27, 41, 35, 0.08);
+    }
+
+    .activity-list {
+      display: grid;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .activity-item {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-width: 0;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .activity-item:last-child {
+      border-bottom: 0;
+    }
+
+    .event-icon {
+      display: inline-grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border-radius: 8px;
+      font-weight: 900;
+    }
+
+    .event-icon.requested {
+      background: var(--amber-bg);
+      color: var(--amber);
+    }
+
+    .event-icon.served {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .event-icon.idle,
+    .event-icon.unknown {
+      background: var(--idle-bg);
+      color: var(--idle);
+    }
+
+    .event-body {
+      min-width: 0;
+    }
+
+    .event-body strong {
+      display: block;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      font-size: 0.92rem;
+      line-height: 1.25;
+    }
+
+    .event-body small {
+      display: block;
+      margin-top: 4px;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .event-time {
+      color: var(--quiet);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      display: grid;
+      min-height: 170px;
+      place-items: center;
+      padding: 28px 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .system-panel {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .system-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 40px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
+    }
+
+    .system-row code {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .mini-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--idle-bg);
+      color: var(--idle);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .mini-pill.connected {
+      background: var(--teal-bg);
+      color: var(--teal);
+    }
+
+    .mini-pill.error {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .mini-pill.active {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .floor-note {
+      padding: 15px;
+      border: 1px solid rgba(217, 138, 18, 0.24);
+      border-radius: var(--radius);
+      background: #fffaf0;
+      color: #704200;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1120px) {
+      .shell {
+        grid-template-columns: 1fr;
+        background: var(--bg);
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        padding: 18px 20px;
+        background: var(--nav);
+      }
+
+      .sidebar-main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .nav-list {
+        display: none;
+      }
+
+      .connection-card {
+        margin-top: 16px;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .secondary-column {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .main {
+        padding: 18px 14px 28px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .toolbar {
+        justify-content: flex-start;
+        width: 100%;
+      }
+
+      .kpi-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tables-grid,
+      .secondary-column {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .sidebar-main {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .brand-title h1 {
+        font-size: 1.05rem;
+      }
+
+      .connection-top,
+      .panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .kpi-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .tables-grid {
+        padding: 10px;
+      }
+
+      .table-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .meta-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .meta-value {
+        text-align: left;
+      }
+
+      .activity-item {
+        grid-template-columns: 36px minmax(0, 1fr);
+        align-items: start;
+      }
+
+      .event-icon {
+        width: 36px;
+        height: 36px;
+      }
+
+      .event-time {
+        grid-column: 2;
+        text-align: left;
+        white-space: normal;
+      }
+
+      .filter-tabs {
+        width: 100%;
+        border-radius: 8px;
+      }
+
+      .filter-tab {
+        flex: 1 1 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Real Time Service Delivery System navigation">
+      <div class="sidebar-main">
+        <div>
+          <div class="brand-mark">
+            <img src="../images/medwell.jpeg" alt="Real-Time Service logo" class="brand-logo" />
+            <div class="brand-title">
+              <h1>Real-Time Service</h1>
+              <h1 class="brand-subtitle">Delivery System</h1>
+              <p>Live floor operations</p>
+            </div>
+          </div>
+          <nav class="nav-list" aria-label="Dashboard sections">
+            <a href="dashboard.html" class="nav-item active"><span class="nav-symbol">F</span><span>Dashboard</span></a>
+            <a href="analytics.html" class="nav-item"><span class="nav-symbol">A</span><span>Analytics</span></a>
+            <a href="history.html" class="nav-item"><span class="nav-symbol">H</span><span>History</span></a>
+            <a href="alerts.html" class="nav-item"><span class="nav-symbol">🔔</span><span>Alerts</span></a>
+            <a href="recommendation.html" class="nav-item"><span class="nav-symbol">💡</span><span>Recommendations</span></a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="connection-card" aria-live="polite">
+        <div class="connection-top">
+          <span class="connection-label">Connection</span>
+          <span class="connection-state">
+            <span id="connectionDot" class="dot reconnecting"></span>
+            <span id="connectionText">Connecting</span>
+          </span>
+        </div>
+        <div id="lastSync" class="last-sync">Last sync: waiting for Firebase</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-heading">
+          <p class="eyebrow">Restaurant command board</p>
+          <h2>Live table service dashboard</h2>
+        </div>
+        <div class="toolbar">
+          <div id="connectionStatus" class="status-pill">
+            <span id="topConnectionDot" class="dot reconnecting"></span>
+            <span id="topConnectionText">Firebase connecting</span>
+          </div>
+          <button id="refreshButton" class="icon-button" type="button" title="Refresh dashboard" aria-label="Refresh dashboard">R</button>
+        </div>
+      </header>
+
+      <div id="errorBanner" class="error-banner" role="alert"></div>
+
+      <div class="dashboard-grid">
+        <section class="primary-column" aria-label="Floor monitoring">
+          <div class="kpi-strip" aria-label="Dashboard metrics">
+            <article class="kpi request">
+              <span>Active tables</span>
+              <strong id="statWaiting">0</strong>
+              <small>Currently active</small>
+            </article>
+            <article class="kpi served">
+              <span>Waiting</span>
+              <strong id="statServed">0</strong>
+              <small>Tables awaiting service</small>
+            </article>
+            <article class="kpi">
+              <span>Served today</span>
+              <strong id="statTotal">0</strong>
+              <small>Completed services</small>
+            </article>
+          </div>
+
+          <section class="panel" aria-labelledby="tablesTitle">
+            <div class="panel-header">
+              <div class="panel-title">
+                <h3 id="tablesTitle">Tables</h3>
+                <p>Quick view for Table 1–3</p>
+              </div>
+              <span id="floorSummary" class="mini-pill">Initializing</span>
+            </div>
+            <div class="tables-grid" id="tablesGrid"></div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDGEmefDNithsiaIjsTMSJC4C7E7u_ad_0",
+      authDomain: "smartwaiter-c9a2e.firebaseapp.com",
+      databaseURL: "https://smartwaiter-c9a2e-default-rtdb.firebaseio.com",
+      projectId: "smartwaiter-c9a2e",
+      storageBucket: "smartwaiter-c9a2e.firebasestorage.app",
+      messagingSenderId: "405623064041",
+      appId: "1:405623064041:web:c69fe02b0fe1fc1efb3778"
+    };
+
+    const TABLE_IDS = ["table_1", "table_2", "table_3"];
+    const TABLE_LABELS = { table_1: "Table 1", table_2: "Table 2", table_3: "Table 3" };
+
+    const connectionDot = document.getElementById("connectionDot");
+    const topConnectionDot = document.getElementById("topConnectionDot");
+    const connectionText = document.getElementById("connectionText");
+    const topConnectionText = document.getElementById("topConnectionText");
+    const lastSync = document.getElementById("lastSync");
+    const errorBanner = document.getElementById("errorBanner");
+    const tablesGrid = document.getElementById("tablesGrid");
+    const activityList = document.getElementById("activityList");
+    const refreshButton = document.getElementById("refreshButton");
+    const floorSummary = document.getElementById("floorSummary");
+    const requestsState = document.getElementById("requestsState");
+    const tablesState = document.getElementById("tablesState");
+    const infoState = document.getElementById("infoState");
+    const statWaiting = document.getElementById("statWaiting");
+    const statServed = document.getElementById("statServed");
+    const statTotal = document.getElementById("statTotal");
+    const statTables = document.getElementById("statTables");
+    const statTablesHint = document.getElementById("statTablesHint");
+    const filterButtons = Array.from(document.querySelectorAll(".filter-tab"));
+
+    let currentFilter = "all";
+    let eventsCache = [];
+    let tableState = {};
+
+    TABLE_IDS.forEach((id) => {
+      tableState[id] = { status: "idle", lastEvent: null, lastTime: null, source: "default" };
+    });
+
+    function setText(node, value) {
+      node.textContent = value == null || value === "" ? "-" : String(value);
+    }
+
+    function clearNode(node) {
+      node.replaceChildren();
+    }
+
+    function updateLastSync() {
+      lastSync.textContent = "Last sync: " + new Date().toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function setMiniPill(node, label, state) {
+      if (!node) return;
+      node.className = "mini-pill" + (state ? " " + state : "");
+      node.textContent = label;
+    }
+
+    function setConnection(state, message) {
+      const normalized = state || "reconnecting";
+      connectionDot.className = "dot " + normalized;
+      topConnectionDot.className = "dot " + normalized;
+      connectionText.textContent = message;
+      topConnectionText.textContent = message;
+      setMiniPill(infoState, normalized === "connected" ? "Online" : normalized === "error" ? "Error" : "Checking", normalized);
+      if (normalized === "connected") updateLastSync();
+    }
+
+    function showError(message) {
+      errorBanner.textContent = message;
+      errorBanner.classList.add("visible");
+    }
+
+    function clearError() {
+      errorBanner.textContent = "";
+      errorBanner.classList.remove("visible");
+    }
+
+    function formatTableLabel(id) {
+      if (TABLE_LABELS[id]) return TABLE_LABELS[id];
+      return String(id || "unknown").replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+
+    function normalizeEventType(value) {
+      const text = String(value || "unknown").toLowerCase();
+      if (text === "request" || text === "requested" || text === "waiting" || text === "service_requested") return "requested";
+      if (text === "served" || text === "complete" || text === "completed") return "served";
+      return text;
+    }
+
+    function statusFromEventType(eventType) {
+      if (eventType === "requested") return "waiting";
+      if (eventType === "served") return "served";
+      return "idle";
+    }
+
+    function parseTimestamp(value) {
+      if (!value) return null;
+      if (typeof value === "number") {
+        const milliseconds = value < 1000000000000 ? value * 1000 : value;
+        const date = new Date(milliseconds);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function formatTime(value) {
+      const date = parseTimestamp(value);
+      if (!date) return value ? String(value) : "-";
+      return date.toLocaleString(undefined, {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function formatShortTime(value) {
+      const date = parseTimestamp(value);
+      if (!date) return value ? String(value) : "-";
+      return date.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function isToday(value) {
+      const date = parseTimestamp(value);
+      if (!date) return false;
+      return date.toDateString() === new Date().toDateString();
+    }
+
+    function getPendingRequestCount(events) {
+      const pendingByTable = {};
+      const sortedEvents = [...events].sort((a, b) => {
+        const aTime = parseTimestamp(a.timestamp)?.getTime() || 0;
+        const bTime = parseTimestamp(b.timestamp)?.getTime() || 0;
+        return aTime - bTime;
+      });
+
+      sortedEvents.forEach((event) => {
+        if (!event.tableId || event.tableId === "unknown") return;
+        if (event.eventType === "requested") {
+          pendingByTable[event.tableId] = true;
+        } else if (event.eventType === "served") {
+          pendingByTable[event.tableId] = false;
+        }
+      });
+
+      return Object.values(pendingByTable).filter(Boolean).length;
+    }
+
+    function normalizeEvent(raw, key) {
+      const safeRaw = raw && typeof raw === "object" ? raw : {};
+      const tableId = safeRaw.table_id || safeRaw.tableId || safeRaw.table || "unknown";
+      const eventType = normalizeEventType(safeRaw.event_type || safeRaw.eventType || safeRaw.type || "unknown");
+      const timestamp = safeRaw.timestamp || safeRaw.time || safeRaw.created_at || safeRaw.createdAt || safeRaw.iso_time || key;
+
+      return { id: key, tableId: String(tableId), eventType, timestamp };
+    }
+
+    function compareEvents(a, b) {
+      const aTime = parseTimestamp(a.timestamp)?.getTime() || 0;
+      const bTime = parseTimestamp(b.timestamp)?.getTime() || 0;
+      return bTime - aTime;
+    }
+
+    function applyEvent(event) {
+      if (!TABLE_IDS.includes(event.tableId)) return;
+      const status = statusFromEventType(event.eventType);
+      if (status === "idle") return;
+
+      tableState[event.tableId] = {
+        status,
+        lastEvent: event.eventType,
+        lastTime: event.timestamp,
+        source: "/requests"
+      };
+    }
+
+    function labelForStatus(status) {
+      if (status === "waiting") return "Waiting";
+      if (status === "served") return "Served";
+      return "Idle";
+    }
+
+    function labelForEvent(eventType) {
+      if (eventType === "requested") return "Customer requested service";
+      if (eventType === "served") return "Service completed";
+      return "Event received";
+    }
+
+    function iconForEvent(eventType) {
+      if (eventType === "requested") return "!";
+      if (eventType === "served") return "OK";
+      return "i";
+    }
+
+    function classForEvent(eventType) {
+      if (eventType === "requested" || eventType === "served") return eventType;
+      return "unknown";
+    }
+
+    function makeMetaRow(label, value) {
+      const row = document.createElement("div");
+      row.className = "meta-row";
+
+      const labelNode = document.createElement("span");
+      labelNode.className = "meta-label";
+      labelNode.textContent = label;
+
+      const valueNode = document.createElement("span");
+      valueNode.className = "meta-value";
+      setText(valueNode, value);
+
+      row.append(labelNode, valueNode);
+      return row;
+    }
+
+    function renderTables() {
+      clearNode(tablesGrid);
+
+      TABLE_IDS.forEach((id) => {
+        const table = tableState[id];
+        const status = table.status || "idle";
+        const article = document.createElement("article");
+        article.className = "table-card " + status;
+
+        const head = document.createElement("div");
+        head.className = "table-head";
+
+        const titleWrap = document.createElement("div");
+        const title = document.createElement("h4");
+        title.className = "table-name";
+        title.textContent = formatTableLabel(id);
+
+        const subtitle = document.createElement("p");
+        subtitle.className = "table-subtitle";
+        subtitle.textContent = status === "waiting" ? "Service attention needed" : status === "served" ? "Latest request completed" : "Monitoring button presses";
+        titleWrap.append(title, subtitle);
+
+        const badge = document.createElement("span");
+        badge.className = "state-badge " + status;
+        const badgeDot = document.createElement("span");
+        badgeDot.className = "state-dot";
+        const badgeText = document.createElement("span");
+        badgeText.textContent = labelForStatus(status);
+        badge.append(badgeDot, badgeText);
+        head.append(titleWrap, badge);
+
+        const signal = document.createElement("div");
+        signal.className = "table-signal";
+        const signalBar = document.createElement("div");
+        signalBar.className = "signal-bar";
+        const signalFill = document.createElement("span");
+        signalFill.className = "signal-fill";
+        signalBar.append(signalFill);
+        signal.append(signalBar);
+
+        const meta = document.createElement("div");
+        meta.className = "table-meta";
+        meta.append(
+          makeMetaRow("Last event", table.lastEvent ? labelForEvent(table.lastEvent) : "No events yet"),
+          makeMetaRow("Updated", table.lastTime ? formatTime(table.lastTime) : "Waiting")
+        );
+
+        article.append(head, signal, meta);
+        tablesGrid.append(article);
+      });
+
+      const waitingCount = getPendingRequestCount(eventsCache);
+      if (waitingCount > 0) {
+        setMiniPill(floorSummary, waitingCount + " waiting", "active");
+      } else {
+        setMiniPill(floorSummary, "Floor clear", "connected");
+      }
+    }
+
+    function renderActivity(events) {
+      if (!activityList) return;
+      clearNode(activityList);
+
+      const filtered = currentFilter === "all" ? events : events.filter((event) => event.eventType === currentFilter);
+
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = events.length ? "No events match this filter." : "No events in Firebase yet. Press a table button on the ESP32.";
+        activityList.append(empty);
+        return;
+      }
+
+      filtered.slice(0, 50).forEach((event) => {
+        const item = document.createElement("div");
+        item.className = "activity-item";
+
+        const icon = document.createElement("div");
+        icon.className = "event-icon " + classForEvent(event.eventType);
+        icon.textContent = iconForEvent(event.eventType);
+
+        const body = document.createElement("div");
+        body.className = "event-body";
+        const title = document.createElement("strong");
+        title.textContent = formatTableLabel(event.tableId) + " - " + labelForEvent(event.eventType);
+        const detail = document.createElement("small");
+        detail.textContent = "Event: " + event.eventType;
+        body.append(title, detail);
+
+        const time = document.createElement("time");
+        time.className = "event-time";
+        time.textContent = formatShortTime(event.timestamp);
+        const parsed = parseTimestamp(event.timestamp);
+        if (parsed) time.dateTime = parsed.toISOString();
+
+        item.append(icon, body, time);
+        activityList.append(item);
+      });
+    }
+
+    function renderStats(events) {
+      const activeTablesCount = TABLE_IDS.length;
+      const waitingCount = getPendingRequestCount(events);
+      const servedToday = events.filter((event) => event.eventType === "served" && isToday(event.timestamp)).length;
+
+      if (statWaiting) statWaiting.textContent = String(activeTablesCount);
+      if (statServed) statServed.textContent = String(waitingCount);
+      if (statTotal) statTotal.textContent = String(servedToday);
+    }
+
+    function renderAll() {
+      renderTables();
+      renderActivity(eventsCache);
+      renderStats(eventsCache);
+    }
+
+    function processRequestsSnapshot(data) {
+      TABLE_IDS.forEach((id) => {
+        tableState[id] = { status: "idle", lastEvent: null, lastTime: null, source: "default" };
+      });
+
+      if (!data || typeof data !== "object") {
+        eventsCache = [];
+        renderAll();
+        return;
+      }
+
+      eventsCache = Object.entries(data)
+        .map(([key, value]) => normalizeEvent(value, key))
+        .sort(compareEvents);
+
+      [...eventsCache].reverse().forEach(applyEvent);
+      renderAll();
+    }
+
+    function processTablesSnapshot(data) {
+      if (!data || typeof data !== "object") {
+        renderAll();
+        return;
+      }
+
+      TABLE_IDS.forEach((id) => {
+        const row = data[id];
+        if (!row || typeof row !== "object") return;
+
+        const statusText = normalizeEventType(row.status || row.state || "");
+        const lastEvent = normalizeEventType(row.last_event || row.lastEvent || row.event_type || row.eventType || statusText);
+        const lastTime = row.updated_at || row.updatedAt || row.timestamp || row.time || tableState[id].lastTime;
+        const derivedStatus = statusText === "requested" ? "waiting" : statusFromEventType(lastEvent);
+
+        if (derivedStatus === "waiting" || derivedStatus === "served") {
+          tableState[id] = {
+            status: derivedStatus,
+            lastEvent: lastEvent === "unknown" ? tableState[id].lastEvent : lastEvent,
+            lastTime,
+            source: "/tables"
+          };
+        }
+      });
+
+      renderAll();
+    }
+
+    function listenToRequests(db) {
+      const requestsRef = db.ref("requests");
+
+      requestsRef.on(
+        "value",
+        (snapshot) => {
+          setConnection("connected", "Firebase connected");
+          setMiniPill(requestsState, "Live", "active");
+          clearError();
+          processRequestsSnapshot(snapshot.val());
+        },
+        (error) => {
+          setConnection("error", "Connection error");
+          setMiniPill(requestsState, "Error", "error");
+          showError("Could not read /requests: " + error.message + ". Check Firebase Realtime Database rules.");
+        }
+      );
+    }
+
+    function listenToTables(db) {
+      db.ref("tables").on(
+        "value",
+        (snapshot) => {
+          setMiniPill(tablesState, "Live", "active");
+          processTablesSnapshot(snapshot.val());
+        },
+        (error) => {
+          setMiniPill(tablesState, "Error", "error");
+          showError("Could not read /tables: " + error.message + ". Check Firebase Realtime Database rules.");
+        }
+      );
+    }
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        currentFilter = button.dataset.filter || "all";
+        filterButtons.forEach((item) => {
+          item.classList.toggle("active", item === button);
+        });
+        renderActivity(eventsCache);
+      });
+    });
+
+    refreshButton.addEventListener("click", () => {
+      window.location.reload();
+    });
+
+    let dashboardInitialized = false;
+
+    function initDashboard() {
+      if (dashboardInitialized) return;
+      dashboardInitialized = true;
+
+      renderAll();
+
+      try {
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref(".info/connected").on("value", (snap) => {
+          if (snap.val() === true) {
+            setConnection("connected", "Firebase connected");
+          } else {
+            setConnection("reconnecting", "Reconnecting");
+          }
+        });
+
+        listenToRequests(db);
+        listenToTables(db);
+      } catch (err) {
+        setConnection("error", "Init failed");
+        setMiniPill(requestsState, "Error", "error");
+        setMiniPill(tablesState, "Error", "error");
+        showError("Firebase init error: " + err.message);
+      }
+    }
+
+    initDashboard();
+    window.addEventListener("load", initDashboard);
+  </script>
+</body>
+</html>

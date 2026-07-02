@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Waiter — Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #18201d;
+      --text: #2b3430;
+      --muted: #6f7a74;
+      --quiet: #8a948f;
+      --bg: #f5f7f4;
+      --panel: #ffffff;
+      --panel-soft: #fbfcfa;
+      --nav: #17231f;
+      --nav-2: #21322d;
+      --line: #dfe5df;
+      --line-strong: #ccd5ce;
+      --amber: #d98a12;
+      --amber-bg: #fff3d8;
+      --green: #168a5b;
+      --green-bg: #e5f6ee;
+      --teal: #128678;
+      --teal-bg: #e1f4f1;
+      --red: #c2413b;
+      --red-bg: #fde9e8;
+      --idle: #69736e;
+      --idle-bg: #eef1ee;
+      --shadow: 0 18px 48px rgba(27, 41, 35, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      display: grid;
+      min-height: 100vh;
+      grid-template-columns: 264px minmax(0, 1fr);
+      background:
+        linear-gradient(90deg, var(--nav) 0 264px, transparent 264px),
+        var(--bg);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+      padding: 24px 20px;
+      color: #f3f7f4;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-icon {
+      display: inline-grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: #f7b64b;
+      color: #17231f;
+      font-weight: 800;
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    .brand-title h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1.15rem;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .brand-title p {
+      margin: 4px 0 0;
+      color: rgba(243, 247, 244, 0.66);
+      font-size: 0.82rem;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: rgba(243, 247, 244, 0.72);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-symbol {
+      display: inline-grid;
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f7b64b;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .connection-card {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: var(--nav-2);
+    }
+
+    .connection-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .connection-label {
+      color: rgba(243, 247, 244, 0.64);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .connection-state {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      color: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--quiet);
+    }
+
+    .dot.connected {
+      background: #2ed39d;
+      box-shadow: 0 0 0 6px rgba(46, 211, 157, 0.12);
+    }
+
+    .dot.error {
+      background: #ff8279;
+      box-shadow: 0 0 0 6px rgba(255, 130, 121, 0.12);
+    }
+
+    .dot.reconnecting {
+      background: #f7b64b;
+      box-shadow: 0 0 0 6px rgba(247, 182, 75, 0.12);
+    }
+
+    .last-sync {
+      color: rgba(243, 247, 244, 0.62);
+      font-size: 0.8rem;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 0 auto 20px;
+      max-width: 1280px;
+    }
+
+    .page-heading {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .page-heading h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .icon-button {
+      display: inline-grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(27, 41, 35, 0.04);
+      transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+    }
+
+    .icon-button:hover {
+      border-color: var(--line-strong);
+      background: var(--panel-soft);
+      transform: translateY(-1px);
+    }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .stat-card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-change {
+      font-size: 0.85rem;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .stat-change.negative {
+      color: var(--red);
+    }
+
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 60px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-title {
+      min-width: 0;
+    }
+
+    .panel-title h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .panel-title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .chart-container {
+      padding: 20px;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .analytics-section {
+      display: grid;
+      gap: 18px;
+      max-width: 1280px;
+      margin: 24px auto 0;
+    }
+
+    .chart-empty-state {
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 80px minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
+    }
+
+    .timeline-time {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-align: center;
+    }
+
+    .timeline-label {
+      font-size: 0.9rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .timeline-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .timeline-value.green {
+      color: var(--green);
+    }
+
+    @media (max-width: 1120px) {
+      .shell {
+        grid-template-columns: 1fr;
+        background: var(--bg);
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        padding: 18px 20px;
+        background: var(--nav);
+      }
+
+      .nav-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .main {
+        padding: 18px 14px 28px;
+      }
+
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .brand-title h1 {
+        font-size: 1.05rem;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Smart Waiter navigation">
+      <div class="sidebar-main">
+        <div>
+          <div class="brand-mark">
+            <img src="../images/medwell.jpeg" alt="Real-Time Service logo" class="brand-logo" />
+            <div class="brand-title">
+              <h1>Real-Time Service</h1>
+              <h1 class="brand-subtitle">Delivery System</h1>
+              <p>Analytics & insights</p>
+            </div>
+          </div>
+          <nav class="nav-list" aria-label="Dashboard sections">
+            <a href="dashboard.html" class="nav-item"><span class="nav-symbol">F</span><span>Dashboard</span></a>
+            <a href="analytics.html" class="nav-item active"><span class="nav-symbol">A</span><span>Analytics</span></a>
+            <a href="history.html" class="nav-item"><span class="nav-symbol">H</span><span>History</span></a>
+            <a href="alerts.html" class="nav-item"><span class="nav-symbol">🔔</span><span>Alerts</span></a>
+            <a href="recommendation.html" class="nav-item"><span class="nav-symbol">💡</span><span>Recommendations</span></a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="connection-card" aria-live="polite">
+        <div class="connection-top">
+          <span class="connection-label">Connection</span>
+          <span class="connection-state">
+            <span id="connectionDot" class="dot reconnecting"></span>
+            <span id="connectionText">Connecting</span>
+          </span>
+        </div>
+        <div id="lastSync" class="last-sync">Last sync: waiting</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-heading">
+          <p class="eyebrow">Data insights</p>
+          <h2>Service analytics & performance metrics</h2>
+        </div>
+        <div class="toolbar">
+          <button id="refreshButton" class="icon-button" type="button" title="Refresh analytics" aria-label="Refresh analytics">↻</button>
+        </div>
+      </header>
+
+      <div class="analytics-grid">
+        <div class="stat-card">
+          <div class="stat-label">Average response time</div>
+          <div id="avgResponse" class="stat-value">—</div>
+          <div id="avgResponseNote" class="stat-change">Calculating from Firebase data</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Total requests today</div>
+          <div id="requestsToday" class="stat-value">—</div>
+          <div id="requestChange" class="stat-change">Live from Firebase</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Service completion rate</div>
+          <div id="completionRate" class="stat-value">—</div>
+          <div id="completionNote" class="stat-change">Based on requests vs. served</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Peak request hour</div>
+          <div id="peakHour" class="stat-value">—</div>
+          <div id="peakHourNote" class="stat-change">Hourly request distribution</div>
+        </div>
+      </div>
+
+      <div class="analytics-section">
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <h3>Hourly request pattern</h3>
+              <p>Service requests distribution by hour</p>
+            </div>
+          </div>
+          <div class="chart-container" id="hourlyChart">
+            <div class="chart-empty-state">
+              Loading hourly request distribution
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDGEmefDNithsiaIjsTMSJC4C7E7u_ad_0",
+      authDomain: "smartwaiter-c9a2e.firebaseapp.com",
+      databaseURL: "https://smartwaiter-c9a2e-default-rtdb.firebaseio.com",
+      projectId: "smartwaiter-c9a2e",
+      storageBucket: "smartwaiter-c9a2e.appspot.com",
+      messagingSenderId: "405623064041",
+      appId: "1:405623064041:web:c69fe02b0fe1fc1efb3778"
+    };
+
+    const connectionDot = document.getElementById("connectionDot");
+    const connectionText = document.getElementById("connectionText");
+    const lastSync = document.getElementById("lastSync");
+    const refreshButton = document.getElementById("refreshButton");
+    const avgResponse = document.getElementById("avgResponse");
+    const avgResponseNote = document.getElementById("avgResponseNote");
+    const requestsToday = document.getElementById("requestsToday");
+    const requestChange = document.getElementById("requestChange");
+    const completionRate = document.getElementById("completionRate");
+    const completionNote = document.getElementById("completionNote");
+    const peakHour = document.getElementById("peakHour");
+    const peakHourNote = document.getElementById("peakHourNote");
+    const hourlyChart = document.getElementById("hourlyChart");
+
+    function updateLastSync() {
+      lastSync.textContent = "Last sync: " + new Date().toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function setConnection(state, message) {
+      const normalized = state || "reconnecting";
+      connectionDot.className = "dot " + normalized;
+      connectionText.textContent = message;
+      if (normalized === "connected") updateLastSync();
+    }
+
+    function formatMinutes(minutes) {
+      if (!Number.isFinite(minutes)) return "—";
+      return `${minutes.toFixed(1)}m`;
+    }
+
+    function formatHourLabel(hour) {
+      const suffix = hour < 12 ? "AM" : "PM";
+      const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+      return `${displayHour}${suffix}`;
+    }
+
+    function buildChart(hourCounts) {
+      if (!hourlyChart) return;
+      hourlyChart.innerHTML = "";
+
+      const totalRequests = Object.values(hourCounts).reduce((sum, value) => sum + value, 0);
+      if (!totalRequests) {
+        hourlyChart.innerHTML = '<div style="color: var(--muted); text-align: center;">No request data available yet.</div>';
+        return;
+      }
+
+      const maxCount = Math.max(...Object.values(hourCounts), 1);
+      const chart = document.createElement("div");
+      chart.style.display = "grid";
+      chart.style.gridTemplateColumns = "repeat(24, minmax(0, 1fr))";
+      chart.style.gap = "8px";
+      chart.style.alignItems = "flex-end";
+      chart.style.width = "100%";
+      chart.style.height = "220px";
+
+      for (let hour = 0; hour < 24; hour++) {
+        const value = hourCounts[hour] || 0;
+        const barWrapper = document.createElement("div");
+        barWrapper.style.display = "flex";
+        barWrapper.style.flexDirection = "column";
+        barWrapper.style.alignItems = "center";
+        barWrapper.style.justifyContent = "flex-end";
+        barWrapper.style.height = "100%";
+
+        const bar = document.createElement("div");
+        bar.style.width = "100%";
+        bar.style.height = `${Math.max(8, (value / maxCount) * 100)}%`;
+        bar.style.background = "linear-gradient(180deg, #f7b64b, #d18b1b)";
+        bar.style.borderRadius = "12px 12px 6px 6px";
+        bar.style.boxShadow = "0 8px 22px rgba(27, 41, 35, 0.08)";
+        bar.style.position = "relative";
+
+        if (value > 0) {
+          const countTag = document.createElement("div");
+          countTag.textContent = value;
+          countTag.style.fontSize = "0.75rem";
+          countTag.style.fontWeight = "700";
+          countTag.style.color = "#ffffff";
+          countTag.style.position = "absolute";
+          countTag.style.top = "6px";
+          countTag.style.left = "50%";
+          countTag.style.transform = "translateX(-50%)";
+          bar.appendChild(countTag);
+        }
+
+        const label = document.createElement("div");
+        label.textContent = formatHourLabel(hour);
+        label.style.fontSize = "0.72rem";
+        label.style.color = "var(--muted)";
+        label.style.marginTop = "8px";
+        label.style.textAlign = "center";
+
+        barWrapper.appendChild(bar);
+        barWrapper.appendChild(label);
+        chart.appendChild(barWrapper);
+      }
+
+      hourlyChart.appendChild(chart);
+    }
+
+    function calculateAnalytics(events) {
+      const today = new Date();
+      const todaysEvents = events.filter((event) => {
+        const date = new Date(event.timestamp);
+        return !Number.isNaN(date.getTime()) && date.toDateString() === today.toDateString();
+      });
+
+      const requestedEvents = todaysEvents.filter((event) => event.eventType === "requested");
+      const servedEvents = todaysEvents.filter((event) => event.eventType === "served");
+      const requestCounts = requestedEvents.length;
+      const servedCounts = servedEvents.length;
+      const completion = requestCounts ? Math.min(100, (servedCounts / requestCounts) * 100) : 0;
+
+      const hourlyCounts = {};
+      requestedEvents.forEach((event) => {
+        const hour = new Date(event.timestamp).getHours();
+        hourlyCounts[hour] = (hourlyCounts[hour] || 0) + 1;
+      });
+
+      let peakHourLabel = "—";
+      if (Object.keys(hourlyCounts).length) {
+        const peakHour = Object.entries(hourlyCounts).reduce((best, current) => (current[1] > best[1] ? current : best), [0, 0])[0];
+        peakHourLabel = formatHourLabel(Number(peakHour));
+      }
+
+      const responseTimes = [];
+      const pending = {};
+      todaysEvents.slice().sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).forEach((event) => {
+        if (event.eventType === "requested") {
+          pending[event.tableId] = new Date(event.timestamp);
+        }
+        if (event.eventType === "served" && pending[event.tableId]) {
+          const diff = (new Date(event.timestamp) - pending[event.tableId]) / 60000;
+          if (diff >= 0) responseTimes.push(diff);
+          pending[event.tableId] = null;
+        }
+      });
+
+      const avgResponse = responseTimes.length ? responseTimes.reduce((sum, value) => sum + value, 0) / responseTimes.length : null;
+
+      return { requestCounts, servedCounts, completion, peakHourLabel, avgResponse, hourlyCounts };
+    }
+
+    function updateUI(metrics) {
+      if (avgResponse) avgResponse.textContent = metrics.avgResponse ? formatMinutes(metrics.avgResponse) : "—";
+      if (avgResponseNote) avgResponseNote.textContent = metrics.avgResponse ? `${metrics.avgResponse.toFixed(1)} minutes average` : "Not enough served events yet";
+      if (requestsToday) requestsToday.textContent = String(metrics.requestCounts);
+      if (requestChange) requestChange.textContent = "Live from Firebase";
+      if (completionRate) completionRate.textContent = `${metrics.completion.toFixed(1)}%`;
+      if (completionNote) completionNote.textContent = metrics.requestCounts ? "Based on today’s requests" : "No requests recorded today";
+      if (peakHour) peakHour.textContent = metrics.peakHourLabel;
+      if (peakHourNote) peakHourNote.textContent = metrics.peakHourLabel !== "—" ? "Most active hour" : "No request hour data";
+      buildChart(metrics.hourlyCounts);
+    }
+
+    function loadAnalytics() {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        db.ref("requests").on("value", (snapshot) => {
+          const data = snapshot.val();
+          const events = data && typeof data === "object"
+            ? Object.entries(data).map(([id, item]) => ({
+                id,
+                tableId: item.table_id || item.tableId || item.table || "unknown",
+                eventType: (item.event_type || item.eventType || item.type || "unknown").toLowerCase(),
+                timestamp: item.timestamp || item.iso_time || item.time || id
+              }))
+            : [];
+          const metrics = calculateAnalytics(events);
+          updateUI(metrics);
+          setConnection("connected", "Firebase connected");
+        }, (error) => {
+          setConnection("error", "Firebase error");
+          if (hourlyChart) hourlyChart.textContent = "Could not load analytics: " + error.message;
+        });
+      } catch (error) {
+        setConnection("error", "Init failed");
+        if (hourlyChart) hourlyChart.textContent = "Firebase init error: " + error.message;
+      }
+    }
+
+    setConnection("reconnecting", "Connecting...");
+    refreshButton.addEventListener("click", () => window.location.reload());
+    updateLastSync();
+    loadAnalytics();
+  </script>
+</body>
+</html>

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real Time Service Delivery System — Alerts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #18201d;
+      --text: #2b3430;
+      --muted: #6f7a74;
+      --quiet: #8a948f;
+      --bg: #f5f7f4;
+      --panel: #ffffff;
+      --panel-soft: #fbfcfa;
+      --nav: #17231f;
+      --nav-2: #21322d;
+      --line: #dfe5df;
+      --line-strong: #ccd5ce;
+      --amber: #d98a12;
+      --amber-bg: #fff3d8;
+      --green: #168a5b;
+      --green-bg: #e5f6ee;
+      --teal: #128678;
+      --teal-bg: #e1f4f1;
+      --red: #c2413b;
+      --red-bg: #fde9e8;
+      --idle: #69736e;
+      --idle-bg: #eef1ee;
+      --shadow: 0 18px 48px rgba(27, 41, 35, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      display: grid;
+      min-height: 100vh;
+      grid-template-columns: 264px minmax(0, 1fr);
+      background:
+        linear-gradient(90deg, var(--nav) 0 264px, transparent 264px),
+        var(--bg);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+      padding: 24px 20px;
+      color: #f3f7f4;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-icon {
+      display: inline-grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: #f7b64b;
+      color: #17231f;
+      font-weight: 800;
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    .brand-title h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1.15rem;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .brand-title p {
+      margin: 4px 0 0;
+      color: rgba(243, 247, 244, 0.66);
+      font-size: 0.82rem;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: rgba(243, 247, 244, 0.72);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-item .nav-badge {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: #ff8279;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      line-height: 1;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .nav-item .nav-badge.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-symbol {
+      display: inline-grid;
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f7b64b;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .connection-card {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: var(--nav-2);
+    }
+
+    .connection-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .connection-label {
+      color: rgba(243, 247, 244, 0.64);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .connection-state {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      color: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--quiet);
+    }
+
+    .dot.connected {
+      background: #2ed39d;
+      box-shadow: 0 0 0 6px rgba(46, 211, 157, 0.12);
+    }
+
+    .dot.error {
+      background: #ff8279;
+      box-shadow: 0 0 0 6px rgba(255, 130, 121, 0.12);
+    }
+
+    .dot.reconnecting {
+      background: #f7b64b;
+      box-shadow: 0 0 0 6px rgba(247, 182, 75, 0.12);
+    }
+
+    .last-sync {
+      color: rgba(243, 247, 244, 0.62);
+      font-size: 0.8rem;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 0 auto 20px;
+      max-width: 1280px;
+    }
+
+    .page-heading {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .page-heading h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .icon-button {
+      display: inline-grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(27, 41, 35, 0.04);
+      transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+    }
+
+    .icon-button:hover {
+      border-color: var(--line-strong);
+      background: var(--panel-soft);
+      transform: translateY(-1px);
+    }
+
+    .alert-tabs {
+      display: flex;
+      gap: 8px;
+      max-width: 1280px;
+      margin: 0 auto 18px;
+      flex-wrap: wrap;
+    }
+
+    .alert-tab {
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: all 160ms ease;
+    }
+
+    .alert-tab:hover,
+    .alert-tab.active {
+      background: var(--ink);
+      color: #ffffff;
+      border-color: var(--ink);
+    }
+
+    .alert-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      margin-left: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .alerts-container {
+      display: grid;
+      gap: 12px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .alert-item {
+      display: grid;
+      grid-template-columns: 8px minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 8px 24px rgba(27, 41, 35, 0.04);
+    }
+
+    .alert-item.critical {
+      border-left-color: var(--red);
+      background: linear-gradient(180deg, #fde9e8 0%, #ffffff 100%);
+    }
+
+    .alert-item.warning {
+      border-left-color: var(--amber);
+      background: linear-gradient(180deg, #fff3d8 0%, #ffffff 100%);
+    }
+
+    .alert-item.info {
+      border-left-color: var(--teal);
+      background: linear-gradient(180deg, #e1f4f1 0%, #ffffff 100%);
+    }
+
+    .alert-item.success {
+      border-left-color: var(--green);
+      background: linear-gradient(180deg, #e5f6ee 0%, #ffffff 100%);
+    }
+
+    .alert-bar {
+      width: 8px;
+      height: 100%;
+      min-height: 80px;
+    }
+
+    .alert-body {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .alert-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .alert-icon {
+      display: inline-grid;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+      place-items: center;
+      font-size: 1.1rem;
+    }
+
+    .alert-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .alert-timestamp {
+      font-size: 0.8rem;
+      color: var(--quiet);
+      white-space: nowrap;
+      margin-left: auto;
+    }
+
+    .alert-message {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .alert-action {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-alert {
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 160ms ease;
+    }
+
+    .btn-alert:hover {
+      border-color: var(--line-strong);
+      background: var(--panel-soft);
+    }
+
+    .empty-alerts {
+      display: grid;
+      min-height: 280px;
+      place-items: center;
+      padding: 28px 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-alerts .icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .empty-alerts .text {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1120px) {
+      .shell {
+        grid-template-columns: 1fr;
+        background: var(--bg);
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        padding: 18px 20px;
+        background: var(--nav);
+      }
+
+      .nav-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .alert-item {
+        grid-template-columns: 1fr;
+      }
+
+      .alert-timestamp {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .brand-title h1 {
+        font-size: 1.05rem;
+      }
+
+      .alert-item {
+        padding: 12px;
+        gap: 10px;
+      }
+
+      .alert-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .alert-timestamp {
+        width: 100%;
+        text-align: left;
+      }
+
+      .alert-action {
+        width: 100%;
+      }
+
+      .btn-alert {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Real Time Service Delivery System navigation">
+      <div class="sidebar-main">
+        <div>
+          <div class="brand-mark">
+            <img src="../images/medwell.jpeg" alt="Real-Time Service logo" class="brand-logo" />
+            <div class="brand-title">
+              <h1>Real-Time Service</h1>
+              <h1 class="brand-subtitle">Delivery System</h1>
+              <p>System notifications</p>
+            </div>
+          </div>
+          <nav class="nav-list" aria-label="Dashboard sections">
+            <a href="dashboard.html" class="nav-item"><span class="nav-symbol">F</span><span>Dashboard</span></a>
+            <a href="analytics.html" class="nav-item"><span class="nav-symbol">A</span><span>Analytics</span></a>
+            <a href="history.html" class="nav-item"><span class="nav-symbol">H</span><span>History</span></a>
+            <a href="alerts.html" class="nav-item active">
+              <span class="nav-symbol">🔔</span>
+              <span>Alerts</span>
+              <span id="alertsNavBadge" class="nav-badge">0</span>
+            </a>
+            <a href="recommendation.html" class="nav-item"><span class="nav-symbol">💡</span><span>Recommendations</span></a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="connection-card" aria-live="polite">
+        <div class="connection-top">
+          <span class="connection-label">Connection</span>
+          <span class="connection-state">
+            <span id="connectionDot" class="dot reconnecting"></span>
+            <span id="connectionText">Connecting</span>
+          </span>
+        </div>
+        <div id="lastSync" class="last-sync">Last sync: waiting</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-heading">
+          <p class="eyebrow">System notifications</p>
+          <h2>Alerts & important events</h2>
+        </div>
+        <div class="toolbar">
+          <button id="refreshButton" class="icon-button" type="button" title="Refresh alerts" aria-label="Refresh alerts">↻</button>
+          <button id="clearButton" class="icon-button" type="button" title="Clear all" aria-label="Clear all">✕</button>
+        </div>
+      </header>
+
+      <div class="alert-tabs">
+        <button class="alert-tab active" data-filter="all">
+          All
+          <span class="alert-count">12</span>
+        </button>
+        <button class="alert-tab" data-filter="critical">
+          Critical
+          <span class="alert-count">2</span>
+        </button>
+        <button class="alert-tab" data-filter="warning">
+          Warnings
+          <span class="alert-count">4</span>
+        </button>
+        <button class="alert-tab" data-filter="info">
+          Info
+          <span class="alert-count">6</span>
+        </button>
+      </div>
+
+      <div class="alerts-container" id="alertsContainer">
+        <div class="empty-alerts">
+          <div class="icon">🔔</div>
+          <div class="text">Loading live alerts from Firebase…</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDGEmefDNithsiaIjsTMSJC4C7E7u_ad_0",
+      authDomain: "smartwaiter-c9a2e.firebaseapp.com",
+      databaseURL: "https://smartwaiter-c9a2e-default-rtdb.firebaseio.com",
+      projectId: "smartwaiter-c9a2e",
+      storageBucket: "smartwaiter-c9a2e.appspot.com",
+      messagingSenderId: "405623064041",
+      appId: "1:405623064041:web:c69fe02b0fe1fc1efb3778"
+    };
+
+    const connectionDot = document.getElementById("connectionDot");
+    const connectionText = document.getElementById("connectionText");
+    const lastSync = document.getElementById("lastSync");
+    const refreshButton = document.getElementById("refreshButton");
+    const clearButton = document.getElementById("clearButton");
+    const alertsContainer = document.getElementById("alertsContainer");
+    const alertsNavBadge = document.getElementById("alertsNavBadge");
+    const alertTabs = Array.from(document.querySelectorAll(".alert-tab"));
+
+    const BASE_ALERT_MINUTES = 2;
+    const HIGH_ALERT_MINUTES = 5;
+    const REPEATED_REQUEST_THRESHOLD = 3;
+    const REPEATED_WINDOW_MINUTES = 2;
+
+    let alerts = [];
+    let activeFilter = "all";
+
+    function updateLastSync() {
+      lastSync.textContent = "Last sync: " + new Date().toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function setConnection(state, message) {
+      const normalized = state || "reconnecting";
+      connectionDot.className = "dot " + normalized;
+      connectionText.textContent = message;
+      if (normalized === "connected") updateLastSync();
+    }
+
+    function parseTimestamp(value) {
+      if (!value) return null;
+      if (typeof value === "number") {
+        const milliseconds = value < 1000000000000 ? value * 1000 : value;
+        const date = new Date(milliseconds);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function normalizeEventType(value) {
+      const text = String(value || "unknown").toLowerCase();
+      if (text === "request" || text === "requested" || text === "waiting" || text === "service_requested") return "requested";
+      if (text === "served" || text === "complete" || text === "completed") return "served";
+      return text;
+    }
+
+    function formatTableLabel(id) {
+      return String(id || "unknown").replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+
+    function formatMinutesAgo(minutes) {
+      if (!Number.isFinite(minutes)) return "just now";
+      if (minutes < 1) return "less than a minute ago";
+      if (minutes < 60) return `${Math.round(minutes)} min ago`;
+      const hours = Math.floor(minutes / 60);
+      return `${hours}h ago`;
+    }
+
+    function buildAlertCard(alert) {
+      const item = document.createElement("div");
+      item.className = `alert-item ${alert.level}`;
+
+      const bar = document.createElement("div");
+      bar.className = "alert-bar";
+      item.appendChild(bar);
+
+      const body = document.createElement("div");
+      body.className = "alert-body";
+
+      const header = document.createElement("div");
+      header.className = "alert-header";
+
+      const icon = document.createElement("span");
+      icon.className = "alert-icon";
+      icon.textContent = alert.icon;
+
+      const title = document.createElement("span");
+      title.className = "alert-title";
+      title.textContent = alert.title;
+
+      const timestamp = document.createElement("span");
+      timestamp.className = "alert-timestamp";
+      timestamp.textContent = alert.timeLabel;
+
+      header.append(icon, title, timestamp);
+
+      const message = document.createElement("div");
+      message.className = "alert-message";
+      message.textContent = alert.message;
+
+      const actions = document.createElement("div");
+      actions.className = "alert-action";
+      const action = document.createElement("button");
+      action.className = "btn-alert";
+      action.textContent = alert.actionLabel;
+      actions.appendChild(action);
+
+      body.append(header, message, actions);
+      item.appendChild(body);
+      return item;
+    }
+
+    function updateNavBadge() {
+      if (!alertsNavBadge) return;
+      const total = alerts.length;
+      alertsNavBadge.textContent = total > 9 ? "9+" : String(total);
+      alertsNavBadge.classList.toggle("visible", total > 0);
+    }
+
+    function updateTabCounts() {
+      const counts = {
+        all: alerts.length,
+        critical: alerts.filter((item) => item.level === "critical").length,
+        warning: alerts.filter((item) => item.level === "warning").length,
+        info: alerts.filter((item) => item.level === "info").length
+      };
+
+      alertTabs.forEach((tab) => {
+        const countNode = tab.querySelector(".alert-count");
+        if (countNode) {
+          countNode.textContent = counts[tab.dataset.filter] || 0;
+        }
+      });
+    }
+
+    function renderAlerts() {
+      if (!alertsContainer) return;
+      const filtered = activeFilter === "all"
+        ? alerts
+        : alerts.filter((item) => item.level === activeFilter);
+
+      alertsContainer.replaceChildren();
+
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-alerts";
+        empty.innerHTML = '<div class="icon">✓</div><div class="text">No active alerts right now</div>';
+        alertsContainer.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach((alert) => {
+        alertsContainer.appendChild(buildAlertCard(alert));
+      });
+    }
+
+    function buildAlerts(events) {
+      const byTable = {};
+      const sortedEvents = [...events].sort((a, b) => {
+        const aTime = parseTimestamp(a.timestamp)?.getTime() || 0;
+        const bTime = parseTimestamp(b.timestamp)?.getTime() || 0;
+        return aTime - bTime;
+      });
+
+      sortedEvents.forEach((event) => {
+        if (!event.tableId || event.tableId === "unknown") return;
+        if (!byTable[event.tableId]) {
+          byTable[event.tableId] = [];
+        }
+        byTable[event.tableId].push(event);
+      });
+
+      const generated = [];
+      Object.entries(byTable).forEach(([tableId, tableEvents]) => {
+        const pendingRequests = [];
+        tableEvents.forEach((event) => {
+          if (event.eventType === "requested") {
+            pendingRequests.push(event);
+          } else if (event.eventType === "served" && pendingRequests.length) {
+            pendingRequests.pop();
+          }
+        });
+
+        if (!pendingRequests.length) return;
+
+        const latestRequest = pendingRequests[pendingRequests.length - 1];
+        const requestTime = parseTimestamp(latestRequest.timestamp);
+        const ageMinutes = requestTime ? (Date.now() - requestTime.getTime()) / 60000 : 0;
+
+        if (ageMinutes >= BASE_ALERT_MINUTES) {
+          const isHigh = ageMinutes >= HIGH_ALERT_MINUTES;
+          generated.push({
+            level: isHigh ? "critical" : "warning",
+            icon: isHigh ? "🔴" : "🟡",
+            title: isHigh ? `High wait time on ${formatTableLabel(tableId)}` : `Service request waiting on ${formatTableLabel(tableId)}`,
+            message: isHigh
+              ? `${formatTableLabel(tableId)} has been waiting for ${Math.round(ageMinutes)} minutes. Please attend now.`
+              : `${formatTableLabel(tableId)} has been waiting for ${Math.round(ageMinutes)} minutes and needs attention.`,
+            timeLabel: formatMinutesAgo(ageMinutes),
+            actionLabel: isHigh ? "Attend now" : "View table"
+          });
+        }
+
+        const requestWindow = tableEvents.filter((event) => {
+          const time = parseTimestamp(event.timestamp);
+          if (!time) return false;
+          return event.eventType === "requested" && (Date.now() - time.getTime()) <= REPEATED_WINDOW_MINUTES * 60000;
+        });
+
+        if (requestWindow.length >= REPEATED_REQUEST_THRESHOLD) {
+          generated.push({
+            level: "warning",
+            icon: "🟡",
+            title: `Repeated requests from ${formatTableLabel(tableId)}`,
+            message: `${requestWindow.length} requests were sent in the last ${REPEATED_WINDOW_MINUTES} minutes.`,
+            timeLabel: "recent activity",
+            actionLabel: "Review table"
+          });
+        }
+      });
+
+      alerts = generated.sort((a, b) => (a.level === "critical" ? -1 : 1));
+      updateTabCounts();
+      updateNavBadge();
+      renderAlerts();
+    }
+
+    function loadAlerts() {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        db.ref("requests").on("value", (snapshot) => {
+          const data = snapshot.val();
+          const events = data && typeof data === "object"
+            ? Object.entries(data).map(([key, value]) => ({
+                id: key,
+                tableId: value.table_id || value.tableId || value.table || "unknown",
+                eventType: normalizeEventType(value.event_type || value.eventType || value.type || "unknown"),
+                timestamp: value.timestamp || value.iso_time || value.time || key
+              }))
+            : [];
+          buildAlerts(events);
+          setConnection("connected", "Firebase connected");
+        }, (error) => {
+          setConnection("error", "Connection error");
+          if (alertsContainer) {
+            alertsContainer.replaceChildren();
+            const empty = document.createElement("div");
+            empty.className = "empty-alerts";
+            empty.innerHTML = '<div class="icon">⚠️</div><div class="text">Could not load alerts: ' + error.message + '</div>';
+            alertsContainer.appendChild(empty);
+          }
+        });
+      } catch (error) {
+        setConnection("error", "Init failed");
+        if (alertsContainer) {
+          alertsContainer.replaceChildren();
+          const empty = document.createElement("div");
+          empty.className = "empty-alerts";
+          empty.innerHTML = '<div class="icon">⚠️</div><div class="text">Firebase init error: ' + error.message + '</div>';
+          alertsContainer.appendChild(empty);
+        }
+      }
+    }
+
+    alertTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        alertTabs.forEach((item) => item.classList.remove("active"));
+        tab.classList.add("active");
+        activeFilter = tab.dataset.filter || "all";
+        renderAlerts();
+      });
+    });
+
+    clearButton.addEventListener("click", () => {
+      if (confirm("Clear all alerts?")) {
+        alerts = [];
+        updateTabCounts();
+        updateNavBadge();
+        renderAlerts();
+      }
+    });
+
+    refreshButton.addEventListener("click", () => {
+      window.location.reload();
+    });
+
+    setConnection("reconnecting", "Connecting...");
+    updateLastSync();
+    loadAlerts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real Time Service Delivery System — Recommendations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #18201d;
+      --text: #2b3430;
+      --muted: #6f7a74;
+      --quiet: #8a948f;
+      --bg: #f5f7f4;
+      --panel: #ffffff;
+      --panel-soft: #fbfcfa;
+      --nav: #17231f;
+      --nav-2: #21322d;
+      --line: #dfe5df;
+      --line-strong: #ccd5ce;
+      --amber: #d98a12;
+      --amber-bg: #fff3d8;
+      --green: #168a5b;
+      --green-bg: #e5f6ee;
+      --teal: #128678;
+      --teal-bg: #e1f4f1;
+      --red: #c2413b;
+      --red-bg: #fde9e8;
+      --idle: #69736e;
+      --idle-bg: #eef1ee;
+      --shadow: 0 18px 48px rgba(27, 41, 35, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      display: grid;
+      min-height: 100vh;
+      grid-template-columns: 264px minmax(0, 1fr);
+      background:
+        linear-gradient(90deg, var(--nav) 0 264px, transparent 264px),
+        var(--bg);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+      padding: 24px 20px;
+      color: #f3f7f4;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-icon {
+      display: inline-grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: #f7b64b;
+      color: #17231f;
+      font-weight: 800;
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    .brand-title h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1.15rem;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .brand-title p {
+      margin: 4px 0 0;
+      color: rgba(243, 247, 244, 0.66);
+      font-size: 0.82rem;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: rgba(243, 247, 244, 0.72);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-symbol {
+      display: inline-grid;
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f7b64b;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .connection-card {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: var(--nav-2);
+    }
+
+    .connection-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .connection-label {
+      color: rgba(243, 247, 244, 0.64);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .connection-state {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      color: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--quiet);
+    }
+
+    .dot.connected {
+      background: #2ed39d;
+      box-shadow: 0 0 0 6px rgba(46, 211, 157, 0.12);
+    }
+
+    .dot.error {
+      background: #ff8279;
+      box-shadow: 0 0 0 6px rgba(255, 130, 121, 0.12);
+    }
+
+    .dot.reconnecting {
+      background: #f7b64b;
+      box-shadow: 0 0 0 6px rgba(247, 182, 75, 0.12);
+    }
+
+    .last-sync {
+      color: rgba(243, 247, 244, 0.62);
+      font-size: 0.8rem;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 0 auto 20px;
+      max-width: 1280px;
+    }
+
+    .page-heading {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .page-heading h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .icon-button {
+      display: inline-grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(27, 41, 35, 0.04);
+      transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+    }
+
+    .icon-button:hover {
+      border-color: var(--line-strong);
+      background: var(--panel-soft);
+      transform: translateY(-1px);
+    }
+
+    .recommendation-list {
+      display: grid;
+      gap: 16px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .recommendation-card {
+      display: grid;
+      grid-template-columns: 60px minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-left-width: 5px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(27, 41, 35, 0.05);
+    }
+
+    .recommendation-card.high {
+      border-left-color: var(--red);
+      background: linear-gradient(180deg, #fde9e8 0%, #ffffff 100%);
+    }
+
+    .recommendation-card.medium {
+      border-left-color: var(--amber);
+      background: linear-gradient(180deg, #fff3d8 0%, #ffffff 100%);
+    }
+
+    .recommendation-card.low {
+      border-left-color: var(--green);
+      background: linear-gradient(180deg, #e5f6ee 0%, #ffffff 100%);
+    }
+
+    .rec-icon {
+      display: grid;
+      width: 60px;
+      height: 60px;
+      place-items: center;
+      border-radius: 12px;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .recommendation-card.high .rec-icon {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .recommendation-card.medium .rec-icon {
+      background: var(--amber-bg);
+      color: var(--amber);
+    }
+
+    .recommendation-card.low .rec-icon {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .rec-content {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .rec-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .rec-description {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .rec-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .recommendation-card.high .rec-badge {
+      background: rgba(194, 65, 59, 0.12);
+      color: var(--red);
+    }
+
+    .recommendation-card.medium .rec-badge {
+      background: rgba(217, 138, 18, 0.12);
+      color: var(--amber);
+    }
+
+    .recommendation-card.low .rec-badge {
+      background: rgba(22, 138, 91, 0.12);
+      color: var(--green);
+    }
+
+    .rec-action {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 160ms ease;
+    }
+
+    .btn-small:hover {
+      border-color: var(--line-strong);
+      background: var(--panel-soft);
+    }
+
+    @media (max-width: 1120px) {
+      .shell {
+        grid-template-columns: 1fr;
+        background: var(--bg);
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        padding: 18px 20px;
+        background: var(--nav);
+      }
+
+      .nav-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .recommendation-card {
+        grid-template-columns: 1fr;
+      }
+
+      .rec-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+      }
+
+      .rec-action {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .brand-title h1 {
+        font-size: 1.05rem;
+      }
+
+      .recommendation-card {
+        padding: 16px;
+      }
+
+      .rec-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Real Time Service Delivery System navigation">
+      <div class="sidebar-main">
+        <div>
+          <div class="brand-mark">
+            <img src="../images/medwell.jpeg" alt="Real-Time Service logo" class="brand-logo" />
+            <div class="brand-title">
+              <h1>Real-Time Service</h1>
+              <h1 class="brand-subtitle">Delivery System</h1>
+              <p>AI-driven insights</p>
+            </div>
+          </div>
+          <nav class="nav-list" aria-label="Dashboard sections">
+            <a href="dashboard.html" class="nav-item"><span class="nav-symbol">F</span><span>Dashboard</span></a>
+            <a href="analytics.html" class="nav-item"><span class="nav-symbol">A</span><span>Analytics</span></a>
+            <a href="history.html" class="nav-item"><span class="nav-symbol">H</span><span>History</span></a>
+            <a href="alerts.html" class="nav-item"><span class="nav-symbol">🔔</span><span>Alerts</span></a>
+            <a href="recommendation.html" class="nav-item active"><span class="nav-symbol">💡</span><span>Recommendations</span></a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="connection-card" aria-live="polite">
+        <div class="connection-top">
+          <span class="connection-label">Connection</span>
+          <span class="connection-state">
+            <span id="connectionDot" class="dot reconnecting"></span>
+            <span id="connectionText">Connecting</span>
+          </span>
+        </div>
+        <div id="lastSync" class="last-sync">Last sync: waiting</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-heading">
+          <p class="eyebrow">Operational insights</p>
+          <h2>Intelligent recommendations & optimizations</h2>
+        </div>
+        <div class="toolbar">
+          <button id="refreshButton" class="icon-button" type="button" title="Refresh recommendations" aria-label="Refresh recommendations">↻</button>
+        </div>
+      </header>
+
+      <div class="recommendation-list">
+        <article class="recommendation-card medium">
+          <div class="rec-icon">🧠</div>
+          <div class="rec-content">
+            <div class="rec-title">Recommendation engine ready</div>
+            <div class="rec-description">This section is reserved for the upcoming machine-learning recommendations. Live predictions and service insights will appear here once the model is connected to your Firebase data.</div>
+            <div class="rec-badge">🟡 ML pending</div>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const connectionDot = document.getElementById("connectionDot");
+    const connectionText = document.getElementById("connectionText");
+    const lastSync = document.getElementById("lastSync");
+    const refreshButton = document.getElementById("refreshButton");
+
+    function updateLastSync() {
+      lastSync.textContent = "Last sync: " + new Date().toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function setConnection(state, message) {
+      const normalized = state || "reconnecting";
+      connectionDot.className = "dot " + normalized;
+      connectionText.textContent = message;
+      if (normalized === "connected") updateLastSync();
+    }
+
+    setConnection("connected", "Firebase connected");
+
+    refreshButton.addEventListener("click", () => {
+      window.location.reload();
+    });
+
+    updateLastSync();
+  </script>
+</body>
+</html>
