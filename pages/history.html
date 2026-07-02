@@ -432,11 +432,21 @@
         background: var(--nav);
       }
 
+      .sidebar-main {
+        flex-wrap: wrap;
+      }
+
       .nav-list {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         margin-top: 16px;
+        width: 100%;
+      }
+
+      .nav-item {
+        flex: 1 1 140px;
+        min-width: 120px;
       }
 
       .table-header,
