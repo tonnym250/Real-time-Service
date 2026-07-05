@@ -2,3 +2,6 @@ flask
 flask-cors
 firebase-admin
 requests
+scikit-learn
+joblib
+pandas

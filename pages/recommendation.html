@@ -294,6 +294,31 @@
       transform: translateY(-1px);
     }
 
+    .retrain-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--teal) 0%, #2e8f84 100%);
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(18, 134, 120, 0.18);
+      font-weight: 700;
+      transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+    .retrain-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(18, 134, 120, 0.24);
+    }
+
+    .retrain-button:disabled {
+      cursor: wait;
+      opacity: 0.8;
+    }
+
     .recommendation-list {
       display: grid;
       gap: 16px;
@@ -527,12 +552,12 @@
           <h2>Intelligent recommendations & optimizations</h2>
         </div>
         <div class="toolbar">
-          <button id="refreshButton" class="icon-button" type="button" title="Refresh recommendations" aria-label="Refresh recommendations">↻</button>
+          <button id="retrainButton" class="retrain-button" type="button" title="Retrain recommendation model" aria-label="Retrain recommendation model">Retrain model</button>
         </div>
       </header>
 
-      <div class="recommendation-list">
-        <article class="recommendation-card medium">
+      <div class="recommendation-list" id="recommendationList">
+        <article class="recommendation-card medium" id="placeholderCard">
           <div class="rec-icon">🧠</div>
           <div class="rec-content">
             <div class="rec-title">Recommendation engine ready</div>
@@ -544,11 +569,50 @@
     </main>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDGEmefDNithsiaIjsTMSJC4C7E7u_ad_0",
+      authDomain: "smartwaiter-c9a2e.firebaseapp.com",
+      databaseURL: "https://smartwaiter-c9a2e-default-rtdb.firebaseio.com",
+      projectId: "smartwaiter-c9a2e",
+      storageBucket: "smartwaiter-c9a2e.firebasestorage.app",
+      messagingSenderId: "405623064041",
+      appId: "1:405623064041:web:c69fe02b0fe1fc1efb3778"
+    };
+
     const connectionDot = document.getElementById("connectionDot");
     const connectionText = document.getElementById("connectionText");
     const lastSync = document.getElementById("lastSync");
-    const refreshButton = document.getElementById("refreshButton");
+    const retrainButton = document.getElementById("retrainButton");
+    const recommendationList = document.getElementById("recommendationList");
+
+    const TABLE_LABELS = {
+      table_1: "Table 1",
+      table_2: "Table 2",
+      table_3: "Table 3",
+      table_4: "Table 4",
+      table_5: "Table 5"
+    };
+
+    const DEMAND_LABELS = {
+      recurring: {
+        title: "Frequent requests",
+        icon: "🔥",
+        badge: "High demand"
+      },
+      occasional: {
+        title: "Occasional requests",
+        icon: "⚡",
+        badge: "Moderate demand"
+      },
+      low: {
+        title: "Low activity",
+        icon: "🌿",
+        badge: "Low demand"
+      }
+    };
 
     function updateLastSync() {
       lastSync.textContent = "Last sync: " + new Date().toLocaleTimeString(undefined, {
@@ -565,13 +629,306 @@
       if (normalized === "connected") updateLastSync();
     }
 
-    setConnection("connected", "Firebase connected");
+    function normalizeTableName(tableId) {
+      return TABLE_LABELS[tableId] || tableId.replace(/_/g, " ").replace(/\b\w/g, (chr) => chr.toUpperCase());
+    }
 
-    refreshButton.addEventListener("click", () => {
-      window.location.reload();
-    });
+    function classifyTableDemand(stats) {
+      if (stats.totalRequests >= 8 || stats.days.size >= 4 || stats.recentHoursPeak >= 3) {
+        return "recurring";
+      }
+      if (stats.totalRequests >= 3 || stats.days.size >= 2 || stats.recent24 >= 2) {
+        return "occasional";
+      }
+      return "low";
+    }
 
-    updateLastSync();
+    function describePattern(stats, tableName) {
+      const lines = [];
+      if (stats.demandType === "recurring") {
+        if (stats.topHour >= 11 && stats.topHour < 15) {
+          lines.push(`${tableName} usually needs attention around lunch.`);
+        } else if (stats.topHour >= 17 && stats.topHour < 21) {
+          lines.push(`${tableName} often shows repeat demand during dinner.`);
+        } else {
+          lines.push(`${tableName} frequently requests service at ${stats.topHour}:00.`);
+        }
+      } else if (stats.demandType === "occasional") {
+        lines.push(`${tableName} has occasional requests and may need extra attention sometimes.`);
+      } else {
+        lines.push(`${tableName} typically has low activity and rarely requests service.`);
+      }
+
+      if (stats.lastRequestAgeHours > 24 && stats.demandType === "low") {
+        lines.push(`${tableName} rarely requests again after being served.`);
+      }
+
+      if (stats.topDay && stats.demandType !== "low") {
+        lines.push(`${tableName} is most active on ${stats.topDay}.`);
+      }
+
+      return lines.join(" ");
+    }
+
+    function buildPatternCard(tableName, stats) {
+      const model = DEMAND_LABELS[stats.demandType];
+      const card = document.createElement("article");
+      card.className = `recommendation-card ${stats.demandType}`;
+      card.innerHTML = `
+        <div class="rec-icon">${model.icon}</div>
+        <div class="rec-content">
+          <div class="rec-title">${tableName} — ${model.title}</div>
+          <div class="rec-description">${describePattern(stats, tableName)}</div>
+          <div class="rec-badge">${model.badge}</div>
+        </div>
+      `;
+      return card;
+    }
+
+    function computeDemandPatterns(events) {
+      const now = new Date();
+      const statsByTable = {};
+
+      events.forEach((event) => {
+        if (!event || event.event_type !== "requested") return;
+        const tableId = event.table_id;
+        const timestamp = new Date(event.timestamp || event.iso_time || event.time || event.created_at);
+        if (Number.isNaN(timestamp.getTime())) return;
+
+        const hour = timestamp.getHours();
+        const weekday = timestamp.toLocaleDateString(undefined, { weekday: "long" });
+        const ageHours = (now - timestamp) / 36e5;
+
+        if (!statsByTable[tableId]) {
+          statsByTable[tableId] = {
+            totalRequests: 0,
+            recent24: 0,
+            days: new Set(),
+            hourCounts: {},
+            dayCounts: {},
+            recentHoursPeak: 0,
+            lastRequestAgeHours: 0,
+            topHour: null,
+            topDay: null
+          };
+        }
+
+        const stats = statsByTable[tableId];
+        stats.totalRequests += 1;
+        stats.days.add(weekday);
+        stats.hourCounts[hour] = (stats.hourCounts[hour] || 0) + 1;
+        stats.dayCounts[weekday] = (stats.dayCounts[weekday] || 0) + 1;
+
+        if (ageHours <= 24) stats.recent24 += 1;
+        stats.recentHoursPeak = Math.max(stats.recentHoursPeak, stats.hourCounts[hour]);
+        stats.lastRequestAgeHours = stats.lastRequestAgeHours === 0 ? ageHours : Math.min(stats.lastRequestAgeHours, ageHours);
+      });
+
+      Object.values(statsByTable).forEach((stats) => {
+        const topHour = Object.entries(stats.hourCounts).sort((a, b) => b[1] - a[1])[0];
+        const topDay = Object.entries(stats.dayCounts).sort((a, b) => b[1] - a[1])[0];
+        stats.topHour = topHour ? Number(topHour[0]) : null;
+        stats.topDay = topDay ? topDay[0] : null;
+        stats.demandType = classifyTableDemand(stats);
+      });
+
+      return statsByTable;
+    }
+
+    function renderDemandPatterns(events) {
+      const statsByTable = computeDemandPatterns(events);
+      recommendationList.innerHTML = "";
+
+      if (Object.keys(statsByTable).length === 0) {
+        recommendationList.innerHTML = `
+          <article class="recommendation-card low">
+            <div class="rec-icon">🟡</div>
+            <div class="rec-content">
+              <div class="rec-title">Waiting for demand data</div>
+              <div class="rec-description">No requested events were found in Firebase yet. Table demand profiles will appear once the system receives requests.</div>
+              <div class="rec-badge">No data</div>
+            </div>
+          </article>
+        `;
+        return;
+      }
+
+      // Calculate total requests for busy period prediction
+      const totalRequests = Object.values(statsByTable).reduce((sum, s) => sum + s.totalRequests, 0);
+      
+      // Fetch busy period prediction FIRST
+      fetch('/predict_busy_period', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ current_request_count: totalRequests })
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.success) {
+            const busyCard = document.createElement("article");
+            const periodClass = result.period === 'very_busy' ? 'high' : result.period === 'busy' ? 'medium' : 'low';
+            busyCard.className = `recommendation-card ${periodClass}`;
+            busyCard.innerHTML = `
+              <div class="rec-icon">${result.period === 'very_busy' ? '🔴' : result.period === 'busy' ? '🟡' : '🟢'}</div>
+              <div class="rec-content">
+                <div class="rec-title">Current period: ${result.period}</div>
+                <div class="rec-description">${result.description}</div>
+                <div class="rec-badge">${result.current_day} ${result.current_hour}:00</div>
+              </div>
+            `;
+            recommendationList.insertBefore(busyCard, recommendationList.firstChild);
+          }
+        })
+        .catch((e) => {
+          console.log('busy period fetch failed:', e);
+        });
+
+      fetch('/predict_demand', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ stats_by_table: statsByTable })
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.success && result.predictions) {
+            Object.keys(statsByTable).sort().forEach((tableId) => {
+              const tableName = normalizeTableName(tableId);
+              const demandType = result.predictions[tableId] || statsByTable[tableId].demandType;
+              statsByTable[tableId].demandType = demandType;
+              recommendationList.appendChild(buildPatternCard(tableName, statsByTable[tableId]));
+            });
+          } else {
+            Object.keys(statsByTable).sort().forEach((tableId) => {
+              const tableName = normalizeTableName(tableId);
+              recommendationList.appendChild(buildPatternCard(tableName, statsByTable[tableId]));
+            });
+          }
+        })
+        .catch(() => {
+          Object.keys(statsByTable).sort().forEach((tableId) => {
+            const tableName = normalizeTableName(tableId);
+            recommendationList.appendChild(buildPatternCard(tableName, statsByTable[tableId]));
+          });
+        });
+    }
+
+    function setRetrainingState(isLoading) {
+      retrainButton.disabled = isLoading;
+      retrainButton.textContent = isLoading ? "Retraining…" : "Retrain model";
+    }
+
+    function retrainModel() {
+      setRetrainingState(true);
+      setConnection("reconnecting", "Retraining model...");
+
+      fetch('/bootstrap_train', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ min_records: 1 })
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.success) {
+            setConnection("connected", "Model retrained");
+            updateLastSync();
+            loadTableDemandPatterns();
+          } else {
+            setConnection("error", result.error || "Retraining failed");
+            loadTableDemandPatterns();
+          }
+        })
+        .catch((error) => {
+          setConnection("error", error.message || "Retraining failed");
+          loadTableDemandPatterns();
+        })
+        .finally(() => {
+          setRetrainingState(false);
+        });
+    }
+
+    function loadTableDemandPatterns() {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      const db = firebase.database();
+      const requestsRef = db.ref("requests");
+
+      requestsRef.once("value")
+        .then((snapshot) => {
+          const data = snapshot.val() || {};
+          const events = Object.values(data);
+          renderDemandPatterns(events);
+          setConnection("connected", "Firebase connected");
+        })
+        .catch((error) => {
+          // Fallback: show busy period even if Firebase fails
+          showBusyPeriodCard();
+          recommendationList.innerHTML += `
+            <article class="recommendation-card low">
+              <div class="rec-icon">⚠️</div>
+              <div class="rec-content">
+                <div class="rec-title">Firebase connection unavailable</div>
+                <div class="rec-description">Showing busy period prediction only. ${error.message}</div>
+                <div class="rec-badge">Limited mode</div>
+              </div>
+            </article>
+          `;
+          setConnection("error", "Firebase error");
+        });
+    }
+
+    function showBusyPeriodCard() {
+      fetch('/predict_busy_period', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ current_request_count: 0 })
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.success) {
+            const busyCard = document.createElement("article");
+            const periodClass = result.period === 'very_busy' ? 'high' : result.period === 'busy' ? 'medium' : 'low';
+            busyCard.className = `recommendation-card ${periodClass}`;
+            busyCard.innerHTML = `
+              <div class="rec-icon">${result.period === 'very_busy' ? '🔴' : result.period === 'busy' ? '🟡' : '🟢'}</div>
+              <div class="rec-content">
+                <div class="rec-title">Current period: ${result.period}</div>
+                <div class="rec-description">${result.description}</div>
+                <div class="rec-badge">${result.current_day} ${result.current_hour}:00</div>
+              </div>
+            `;
+            recommendationList.prepend(busyCard);
+          }
+        })
+        .catch((e) => {
+          console.log('busy period fetch failed:', e);
+          // Fallback busy card when API is unavailable
+          const busyCard = document.createElement("article");
+          busyCard.className = `recommendation-card low`;
+          busyCard.innerHTML = `
+            <div class="rec-icon">⚪</div>
+            <div class="rec-content">
+              <div class="rec-title">Busy period unavailable</div>
+              <div class="rec-description">Unable to determine current busy period — the prediction service is unreachable.</div>
+              <div class="rec-badge">Status: unknown</div>
+            </div>
+          `;
+          recommendationList.prepend(busyCard);
+        });
+    }
+
+    retrainButton.addEventListener("click", retrainModel);
+
+    setConnection("reconnecting", "Connecting to Firebase...");
+    loadTableDemandPatterns();
   </script>
 </body>
 </html>
