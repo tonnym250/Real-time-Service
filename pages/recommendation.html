@@ -22,6 +22,7 @@
       --line-strong: #ccd5ce;
       --amber: #d98a12;
       --amber-bg: #fff3d8;
+      --blue: #3d6dd1;
       --green: #168a5b;
       --green-bg: #e5f6ee;
       --teal: #128678;
@@ -162,10 +163,20 @@
       flex: 0 0 auto;
       place-items: center;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(247, 182, 75, 0.16);
       color: #f7b64b;
       font-size: 0.78rem;
       font-weight: 800;
+    }
+
+    .nav-symbol svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
     }
 
     .connection-card {
@@ -339,12 +350,14 @@
       box-shadow: 0 10px 28px rgba(27, 41, 35, 0.05);
     }
 
-    .recommendation-card.high {
+    .recommendation-card.high,
+    .recommendation-card.recurring {
       border-left-color: var(--red);
       background: linear-gradient(180deg, #fde9e8 0%, #ffffff 100%);
     }
 
-    .recommendation-card.medium {
+    .recommendation-card.medium,
+    .recommendation-card.occasional {
       border-left-color: var(--amber);
       background: linear-gradient(180deg, #fff3d8 0%, #ffffff 100%);
     }
@@ -352,6 +365,16 @@
     .recommendation-card.low {
       border-left-color: var(--green);
       background: linear-gradient(180deg, #e5f6ee 0%, #ffffff 100%);
+    }
+
+    .recommendation-card.wait-time {
+      border-left-color: var(--blue);
+      background: linear-gradient(180deg, #e8f2ff 0%, #ffffff 100%);
+    }
+
+    .recommendation-card .rec-icon {
+      background: rgba(23, 35, 31, 0.06);
+      color: var(--ink);
     }
 
     .rec-icon {
@@ -364,18 +387,31 @@
       font-weight: 700;
     }
 
-    .recommendation-card.high .rec-icon {
-      background: var(--red-bg);
+    .rec-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .recommendation-card.high .rec-icon,
+    .recommendation-card.recurring .rec-icon {
+      background: rgba(194, 65, 59, 0.12);
       color: var(--red);
     }
 
-    .recommendation-card.medium .rec-icon {
-      background: var(--amber-bg);
+    .recommendation-card.medium .rec-icon,
+    .recommendation-card.occasional .rec-icon,
+    .recommendation-card.wait-time .rec-icon {
+      background: rgba(217, 138, 18, 0.16);
       color: var(--amber);
     }
 
     .recommendation-card.low .rec-icon {
-      background: var(--green-bg);
+      background: rgba(22, 138, 91, 0.14);
       color: var(--green);
     }
 
@@ -411,12 +447,14 @@
       white-space: nowrap;
     }
 
-    .recommendation-card.high .rec-badge {
+    .recommendation-card.high .rec-badge,
+    .recommendation-card.recurring .rec-badge {
       background: rgba(194, 65, 59, 0.12);
       color: var(--red);
     }
 
-    .recommendation-card.medium .rec-badge {
+    .recommendation-card.medium .rec-badge,
+    .recommendation-card.occasional .rec-badge {
       background: rgba(217, 138, 18, 0.12);
       color: var(--amber);
     }
@@ -524,11 +562,11 @@
             </div>
           </div>
           <nav class="nav-list" aria-label="Dashboard sections">
-            <a href="dashboard.html" class="nav-item"><span class="nav-symbol">F</span><span>Dashboard</span></a>
-            <a href="analytics.html" class="nav-item"><span class="nav-symbol">A</span><span>Analytics</span></a>
-            <a href="history.html" class="nav-item"><span class="nav-symbol">H</span><span>History</span></a>
-            <a href="alerts.html" class="nav-item"><span class="nav-symbol">🔔</span><span>Alerts</span></a>
-            <a href="recommendation.html" class="nav-item active"><span class="nav-symbol">💡</span><span>Recommendations</span></a>
+            <a href="dashboard.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect></svg></span><span>Dashboard</span></a>
+            <a href="analytics.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V10"></path><path d="M12 19V5"></path><path d="M20 19V13"></path><path d="M4 15h16"></path></svg></span><span>Analytics</span></a>
+            <a href="history.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg></span><span>History</span></a>
+            <a href="alerts.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0"></path><path d="M6 8a4 4 0 0 1 12 0"></path><path d="M5 15h14"></path><path d="M8 15v2a4 4 0 0 0 8 0v-2"></path></svg></span><span>Alerts</span></a>
+            <a href="recommendation.html" class="nav-item active"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M19 15l.5 1.5L21 17l-1.5.5L19 19l-.5-1.5L17 17l1.5-.5L19 15z"></path></svg></span><span>Recommendations</span></a>
           </nav>
         </div>
       </div>
@@ -558,19 +596,19 @@
 
       <div class="recommendation-list" id="recommendationList">
         <article class="recommendation-card medium" id="placeholderCard">
-          <div class="rec-icon">🧠</div>
+          <div class="rec-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M19 15l.5 1.5L21 17l-1.5.5L19 19l-.5-1.5L17 17l1.5-.5L19 15z"></path></svg></div>
           <div class="rec-content">
-            <div class="rec-title">Recommendation engine ready</div>
-            <div class="rec-description">This section is reserved for the upcoming machine-learning recommendations. Live predictions and service insights will appear here once the model is connected to your Firebase data.</div>
-            <div class="rec-badge">🟡 ML pending</div>
+            <div class="rec-title">Recommendations loading</div>
+            <div class="rec-description">Live recommendations will appear here as soon as the data feed is available.</div>
+            <div class="rec-badge">Stand by</div>
           </div>
         </article>
       </div>
     </main>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDGEmefDNithsiaIjsTMSJC4C7E7u_ad_0",
@@ -588,6 +626,9 @@
     const retrainButton = document.getElementById("retrainButton");
     const recommendationList = document.getElementById("recommendationList");
 
+    // Backend base URL — override with window.BACKEND_URL if needed
+    const BACKEND_URL = window.BACKEND_URL || 'http://127.0.0.1:5001';
+
     const TABLE_LABELS = {
       table_1: "Table 1",
       table_2: "Table 2",
@@ -598,21 +639,52 @@
 
     const DEMAND_LABELS = {
       recurring: {
-        title: "Frequent requests",
-        icon: "🔥",
-        badge: "High demand"
+        title: "High priority",
+        icon: "alert",
+        badge: "Quick attention"
       },
       occasional: {
-        title: "Occasional requests",
-        icon: "⚡",
-        badge: "Moderate demand"
+        title: "Medium priority",
+        icon: "trend",
+        badge: "Monitor closely"
       },
       low: {
-        title: "Low activity",
-        icon: "🌿",
-        badge: "Low demand"
+        title: "Low priority",
+        icon: "check",
+        badge: "No rush"
       }
     };
+
+    const WAIT_TIME_LABELS = {
+      high: {
+        title: "High wait time",
+        icon: "alert",
+        badge: "Immediate attention"
+      },
+      medium: {
+        title: "Moderate wait time",
+        icon: "clock",
+        badge: "Monitor closely"
+      },
+      low: {
+        title: "Low wait time",
+        icon: "check",
+        badge: "On track"
+      }
+    };
+
+    function renderIcon(name) {
+      const icons = {
+        sparkle: '<svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path></svg>',
+        trend: '<svg viewBox="0 0 24 24"><path d="M4 19h16"></path><path d="M7 14l3-3 2 2 5-6"></path><path d="M16 7h3v3"></path></svg>',
+        check: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M9 12l2 2 4-4"></path></svg>',
+        alert: '<svg viewBox="0 0 24 24"><path d="M12 3l8 16H4z"></path><path d="M12 8v5"></path><path d="M12 15h.01"></path></svg>',
+        clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg>',
+        bell: '<svg viewBox="0 0 24 24"><path d="M15 17H5a2 2 0 0 1-2-2V13a4 4 0 0 1 4-4V6a3 3 0 1 1 6 0v3a4 4 0 0 1 4 4v2a2 2 0 0 1-2 2"></path><path d="M10 17a2 2 0 0 0 4 0"></path></svg>',
+        activity: '<svg viewBox="0 0 24 24"><path d="M3 12h3l2-4 3 8 2-4h8"></path></svg>'
+      };
+      return icons[name] || icons.sparkle;
+    }
 
     function updateLastSync() {
       lastSync.textContent = "Last sync: " + new Date().toLocaleTimeString(undefined, {
@@ -633,38 +705,98 @@
       return TABLE_LABELS[tableId] || tableId.replace(/_/g, " ").replace(/\b\w/g, (chr) => chr.toUpperCase());
     }
 
+    function parseEventTimestamp(event) {
+      const ts = event.timestamp || event.iso_time || event.time || event.created_at;
+      const date = ts ? new Date(ts) : new Date(NaN);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function computePendingQueueStats(events) {
+      const now = new Date();
+      const pendingByTable = {};
+
+      const sortedEvents = events
+        .map((event) => ({ event, timestamp: parseEventTimestamp(event) }))
+        .filter((item) => item.timestamp)
+        .sort((a, b) => a.timestamp - b.timestamp);
+
+      sortedEvents.forEach(({ event, timestamp }) => {
+        const type = (event.event_type || event.eventType || '').toLowerCase();
+        const tableId = event.table_id || event.tableId;
+        if (!tableId || !type) return;
+
+        if (type === 'requested') {
+          const queue = pendingByTable[tableId] || [];
+          queue.push(timestamp);
+          pendingByTable[tableId] = queue;
+        } else if (type === 'served') {
+          pendingByTable[tableId] = [];
+        }
+      });
+
+      let pendingRequests = 0;
+      let oldestWaitMinutes = Infinity;
+      Object.values(pendingByTable).forEach((queue) => {
+        pendingRequests += queue.length;
+        queue.forEach((timestamp) => {
+          const ageMinutes = (now - timestamp) / 60000;
+          oldestWaitMinutes = Math.min(oldestWaitMinutes, ageMinutes);
+        });
+      });
+
+      return {
+        pendingRequests,
+        oldest_wait_minutes: Number.isFinite(oldestWaitMinutes) ? oldestWaitMinutes : 0
+      };
+    }
+
+    function countCurrentHourRequests(events) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentDay = now.toLocaleDateString(undefined, { weekday: 'long' });
+      const currentDateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+      return events.reduce((count, event) => {
+        const timestamp = parseEventTimestamp(event);
+        if (!timestamp) return count;
+
+        const eventHour = timestamp.getHours();
+        const eventDay = timestamp.toLocaleDateString(undefined, { weekday: 'long' });
+        const eventDateKey = `${timestamp.getFullYear()}-${String(timestamp.getMonth() + 1).padStart(2, '0')}-${String(timestamp.getDate()).padStart(2, '0')}`;
+        const isRequested = (event.event_type || event.eventType || '').toLowerCase() === 'requested';
+
+        return count + ((eventHour === currentHour && eventDay === currentDay && eventDateKey === currentDateKey && isRequested) ? 1 : 0);
+      }, 0);
+    }
+
     function classifyTableDemand(stats) {
-      if (stats.totalRequests >= 8 || stats.days.size >= 4 || stats.recentHoursPeak >= 3) {
+      if (stats.totalRequests >= 20 || stats.days.size >= 5 || stats.recentHoursPeak >= 5) {
         return "recurring";
       }
-      if (stats.totalRequests >= 3 || stats.days.size >= 2 || stats.recent24 >= 2) {
+      if (stats.totalRequests >= 10 || stats.days.size >= 3 || stats.recent24 >= 4) {
         return "occasional";
       }
       return "low";
     }
 
     function describePattern(stats, tableName) {
+      const demandType = stats.demandType || "low";
+      const peakDay = stats.topDay || "the week";
+      const hour = Number(stats.topHour) || 0;
       const lines = [];
-      if (stats.demandType === "recurring") {
-        if (stats.topHour >= 11 && stats.topHour < 15) {
-          lines.push(`${tableName} usually needs attention around lunch.`);
-        } else if (stats.topHour >= 17 && stats.topHour < 21) {
-          lines.push(`${tableName} often shows repeat demand during dinner.`);
+
+      if (demandType === "recurring") {
+        if (11 <= hour && hour < 15) {
+          lines.push(`${tableName} is busy on ${peakDay} around lunch and may need extra attention.`);
+        } else if (17 <= hour && hour < 21) {
+          lines.push(`${tableName} is busy on ${peakDay} around the evening rush and may need a quick check-in.`);
         } else {
-          lines.push(`${tableName} frequently requests service at ${stats.topHour}:00.`);
+          lines.push(`${tableName} shows repeated demand on ${peakDay} and may benefit from proactive support.`);
         }
-      } else if (stats.demandType === "occasional") {
-        lines.push(`${tableName} has occasional requests and may need extra attention sometimes.`);
+      } else if (demandType === "occasional") {
+        lines.push(`${tableName} has moderate demand and is worth monitoring on ${peakDay} during busy periods.`);
       } else {
-        lines.push(`${tableName} typically has low activity and rarely requests service.`);
-      }
-
-      if (stats.lastRequestAgeHours > 24 && stats.demandType === "low") {
-        lines.push(`${tableName} rarely requests again after being served.`);
-      }
-
-      if (stats.topDay && stats.demandType !== "low") {
-        lines.push(`${tableName} is most active on ${stats.topDay}.`);
+        lines.push(`${tableName} is quiet right now and usually stays calm after service.`);
       }
 
       return lines.join(" ");
@@ -675,11 +807,26 @@
       const card = document.createElement("article");
       card.className = `recommendation-card ${stats.demandType}`;
       card.innerHTML = `
-        <div class="rec-icon">${model.icon}</div>
+        <div class="rec-icon" aria-hidden="true">${renderIcon(model.icon)}</div>
         <div class="rec-content">
           <div class="rec-title">${tableName} — ${model.title}</div>
           <div class="rec-description">${describePattern(stats, tableName)}</div>
           <div class="rec-badge">${model.badge}</div>
+        </div>
+      `;
+      return card;
+    }
+
+    function buildWaitTimeCard(waitInfo) {
+      const label = WAIT_TIME_LABELS[waitInfo.level] || WAIT_TIME_LABELS.low;
+      const card = document.createElement("article");
+      card.className = `recommendation-card wait-time ${waitInfo.level}`;
+      card.innerHTML = `
+        <div class="rec-icon" aria-hidden="true">${renderIcon(label.icon)}</div>
+        <div class="rec-content">
+          <div class="rec-title">Wait-Time Advisory — ${label.title}</div>
+          <div class="rec-description">${waitInfo.message}</div>
+          <div class="rec-badge">${label.badge} • ${waitInfo.estimate}</div>
         </div>
       `;
       return card;
@@ -703,11 +850,12 @@
           statsByTable[tableId] = {
             totalRequests: 0,
             recent24: 0,
+            recent1h: 0,
             days: new Set(),
             hourCounts: {},
             dayCounts: {},
             recentHoursPeak: 0,
-            lastRequestAgeHours: 0,
+            lastRequestAgeHours: Infinity,
             topHour: null,
             topDay: null
           };
@@ -720,8 +868,9 @@
         stats.dayCounts[weekday] = (stats.dayCounts[weekday] || 0) + 1;
 
         if (ageHours <= 24) stats.recent24 += 1;
+        if (ageHours <= 1) stats.recent1h += 1;
         stats.recentHoursPeak = Math.max(stats.recentHoursPeak, stats.hourCounts[hour]);
-        stats.lastRequestAgeHours = stats.lastRequestAgeHours === 0 ? ageHours : Math.min(stats.lastRequestAgeHours, ageHours);
+        stats.lastRequestAgeHours = Math.min(stats.lastRequestAgeHours, ageHours);
       });
 
       Object.values(statsByTable).forEach((stats) => {
@@ -742,7 +891,7 @@
       if (Object.keys(statsByTable).length === 0) {
         recommendationList.innerHTML = `
           <article class="recommendation-card low">
-            <div class="rec-icon">🟡</div>
+            <div class="rec-icon" aria-hidden="true">${renderIcon("bell")}</div>
             <div class="rec-content">
               <div class="rec-title">Waiting for demand data</div>
               <div class="rec-description">No requested events were found in Firebase yet. Table demand profiles will appear once the system receives requests.</div>
@@ -753,27 +902,57 @@
         return;
       }
 
-      // Calculate total requests for busy period prediction
-      const totalRequests = Object.values(statsByTable).reduce((sum, s) => sum + s.totalRequests, 0);
+      // Calculate current request load and oldest pending age for recommendations
+      const queueStats = computePendingQueueStats(events);
+      const currentRequests = queueStats.pendingRequests;
+      const currentHourRequests = countCurrentHourRequests(events);
+      const normalizedOldestWait = queueStats.oldest_wait_minutes;
       
-      // Fetch busy period prediction FIRST
-      fetch('/predict_busy_period', {
+      // Fetch wait-time recommendation first so it appears above demand predictions
+      console.log('Fetching wait-time recommendation from', BACKEND_URL + '/recommend_wait_time');
+      fetch(BACKEND_URL + '/recommend_wait_time', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ current_request_count: totalRequests })
+        body: JSON.stringify({
+          pending_requests: currentRequests,
+          oldest_wait_minutes: normalizedOldestWait
+        })
       })
         .then((response) => response.json())
         .then((result) => {
+          console.log('wait-time result', result);
+          if (result.success) {
+            recommendationList.appendChild(buildWaitTimeCard(result));
+          }
+        })
+        .catch((e) => {
+          console.log('wait-time fetch failed:', e);
+        });
+      
+      // Fetch busy period prediction FIRST
+      console.log('Fetching busy period from', BACKEND_URL + '/predict_busy_period');
+      fetch(BACKEND_URL + '/predict_busy_period', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ current_request_count: currentHourRequests })
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          console.log('busy period result', result);
           if (result.success) {
             const busyCard = document.createElement("article");
             const periodClass = result.period === 'very_busy' ? 'high' : result.period === 'busy' ? 'medium' : 'low';
+            const busyIcon = result.period === 'very_busy' ? 'alert' : result.period === 'busy' ? 'clock' : 'check';
             busyCard.className = `recommendation-card ${periodClass}`;
             busyCard.innerHTML = `
-              <div class="rec-icon">${result.period === 'very_busy' ? '🔴' : result.period === 'busy' ? '🟡' : '🟢'}</div>
+              <div class="rec-icon" aria-hidden="true">${renderIcon('activity')}</div>
               <div class="rec-content">
-                <div class="rec-title">Current period: ${result.period}</div>
+                <div class="rec-title">Current period</div>
+                <div class="rec-subtitle">${result.period.replace('_', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase())}</div>
                 <div class="rec-description">${result.description}</div>
                 <div class="rec-badge">${result.current_day} ${result.current_hour}:00</div>
               </div>
@@ -785,7 +964,8 @@
           console.log('busy period fetch failed:', e);
         });
 
-      fetch('/predict_demand', {
+      console.log('Fetching demand predictions from', BACKEND_URL + '/predict_demand');
+      fetch(BACKEND_URL + '/predict_demand', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -794,6 +974,7 @@
       })
         .then((response) => response.json())
         .then((result) => {
+          console.log('predict_demand result', result);
           if (result.success && result.predictions) {
             Object.keys(statsByTable).sort().forEach((tableId) => {
               const tableName = normalizeTableName(tableId);
@@ -825,14 +1006,25 @@
       setRetrainingState(true);
       setConnection("reconnecting", "Retraining model...");
 
-      fetch('/bootstrap_train', {
+      const retrainUrl = BACKEND_URL + '/bootstrap_train';
+      console.log('Retraining model via', retrainUrl);
+
+      fetch(retrainUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ min_records: 1 })
       })
-        .then((response) => response.json())
+        .then(async (response) => {
+          const ct = response.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            return response.json();
+          }
+          const text = await response.text();
+          console.error('Retrain returned non-JSON response:', text);
+          throw new Error('Retrain error: server returned non-JSON response');
+        })
         .then((result) => {
           if (result.success) {
             setConnection("connected", "Model retrained");
@@ -871,7 +1063,7 @@
           showBusyPeriodCard();
           recommendationList.innerHTML += `
             <article class="recommendation-card low">
-              <div class="rec-icon">⚠️</div>
+              <div class="rec-icon" aria-hidden="true">${renderIcon("alert")}</div>
               <div class="rec-content">
                 <div class="rec-title">Firebase connection unavailable</div>
                 <div class="rec-description">Showing busy period prediction only. ${error.message}</div>
@@ -884,7 +1076,9 @@
     }
 
     function showBusyPeriodCard() {
-      fetch('/predict_busy_period', {
+      const url = BACKEND_URL + '/predict_busy_period';
+      console.log('Fallback busy period fetch from', url);
+      fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -896,12 +1090,14 @@
           if (result.success) {
             const busyCard = document.createElement("article");
             const periodClass = result.period === 'very_busy' ? 'high' : result.period === 'busy' ? 'medium' : 'low';
+            const busyIcon = result.period === 'very_busy' ? 'alert' : result.period === 'busy' ? 'clock' : 'check';
             busyCard.className = `recommendation-card ${periodClass}`;
             busyCard.innerHTML = `
-              <div class="rec-icon">${result.period === 'very_busy' ? '🔴' : result.period === 'busy' ? '🟡' : '🟢'}</div>
+              <div class="rec-icon" aria-hidden="true">${renderIcon('activity')}</div>
               <div class="rec-content">
                 <div class="rec-title">Current period: ${result.period}</div>
                 <div class="rec-description">${result.description}</div>
+                <div class="rec-caption">Overview: this compares live requests with the usual demand for this hour and weekday so you can spot unusually high service pressure.</div>
                 <div class="rec-badge">${result.current_day} ${result.current_hour}:00</div>
               </div>
             `;
@@ -914,7 +1110,7 @@
           const busyCard = document.createElement("article");
           busyCard.className = `recommendation-card low`;
           busyCard.innerHTML = `
-            <div class="rec-icon">⚪</div>
+            <div class="rec-icon" aria-hidden="true">${renderIcon("alert")}</div>
             <div class="rec-content">
               <div class="rec-title">Busy period unavailable</div>
               <div class="rec-description">Unable to determine current busy period — the prediction service is unreachable.</div>
@@ -927,8 +1123,8 @@
 
     retrainButton.addEventListener("click", retrainModel);
 
-    setConnection("reconnecting", "Connecting to Firebase...");
-    loadTableDemandPatterns();
+    setConnection("connected", "Ready");
+    window.setTimeout(loadTableDemandPatterns, 120);
   </script>
 </body>
 </html>

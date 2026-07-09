@@ -13,11 +13,11 @@ import time
 # started both as a package (`python -m backend.api_server`) and
 # as a script from the `backend` directory (`python api_server.py`).
 try:
-    from backend.demand_model import make_record, predict, train_model
+    from backend.demand_model import make_record, predict, train_model, classify_demand_from_stats
     from backend.busy_period import calculate_busy_baseline, predict_busy_period, describe_busy_period
 except Exception:
     # fallback to local import when running from backend/ directly
-    from demand_model import make_record, predict, train_model
+    from demand_model import make_record, predict, train_model, classify_demand_from_stats
     from busy_period import calculate_busy_baseline, predict_busy_period, describe_busy_period
 
 app = Flask(__name__)
@@ -32,7 +32,12 @@ def serve_page(filename):
     
     if os.path.exists(filepath) and filepath.endswith('.html'):
         with open(filepath, 'r', encoding='utf-8') as f:
-            return f.read(), 200, {'Content-Type': 'text/html'}
+            content = f.read()
+        response = app.response_class(content, mimetype='text/html')
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response, 200
     return 'Not found', 404
 
 # Firebase configuration
@@ -96,6 +101,17 @@ def send_telegram_message(message):
         return False
 
 
+def dispatch_background_notification(message):
+    """Send Telegram notifications asynchronously so the API responds faster."""
+    try:
+        thread = Thread(target=send_telegram_message, args=(message,), daemon=True)
+        thread.start()
+        return True
+    except Exception as e:
+        print(f"Notification dispatch error: {e}")
+        return False
+
+
 def cleanup_old_requests(max_age_minutes=10):
     """Auto-cleanup old pending requests to prevent stale alerts.
     Marks requests older than max_age_minutes that are still 'requested' as 'expired'.
@@ -103,26 +119,27 @@ def cleanup_old_requests(max_age_minutes=10):
     try:
         ref = db.reference('requests')
         snapshot = ref.get()
-        
-        if not snapshot or not isinstance(snapshot.val(), dict):
+
+        # firebase_admin returns plain Python types from ref.get()
+        if not snapshot or not isinstance(snapshot, dict):
             return {'cleaned': 0, 'message': 'No requests to clean'}
-        
-        requests_data = snapshot.val()
+
+        requests_data = snapshot
         now = datetime.datetime.now()
         cleaned_count = 0
-        
+
         for key, event in requests_data.items():
-            if event.get('event_type') != 'requested':
+            if not event or event.get('event_type') != 'requested':
                 continue
-                
+
             timestamp_str = event.get('timestamp') or event.get('iso_time')
             if not timestamp_str:
                 continue
-            
+
             try:
                 event_time = datetime.datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
                 age_minutes = (now - event_time).total_seconds() / 60
-                
+
                 if age_minutes > max_age_minutes:
                     # Mark as expired instead of deleting to keep history
                     ref.child(key).update({
@@ -133,11 +150,11 @@ def cleanup_old_requests(max_age_minutes=10):
                     print(f"Marked request {key} as expired (age: {age_minutes:.1f}min)")
             except Exception as e:
                 print(f"Error processing request {key}: {e}")
-        
+
         message = f"Cleanup complete: marked {cleaned_count} old requests as expired"
         print(message)
         return {'cleaned': cleaned_count, 'message': message}
-    
+
     except Exception as e:
         print(f"Cleanup error: {e}")
         return {'cleaned': 0, 'error': str(e)}
@@ -165,6 +182,27 @@ def arduino_button():
         
         # Write to Firebase /requests
         ref = db.reference('requests')
+        if event_type == 'served':
+            snapshot = ref.get()
+            if snapshot and isinstance(snapshot, dict):
+                pending_keys = []
+                for key, item in snapshot.items():
+                    if not item:
+                        continue
+                    if str(item.get('table_id')) != str(table_id):
+                        continue
+                    if str(item.get('event_type', '')).lower() != 'requested':
+                        continue
+                    pending_keys.append(key)
+
+                for key in pending_keys:
+                    ref.child(key).update({
+                        'event_type': 'served',
+                        'timestamp': timestamp,
+                        'iso_time': timestamp,
+                        'served_at': timestamp
+                    })
+
         new_entry = ref.push()
         new_entry.set({
             'table_id': table_id,
@@ -183,7 +221,7 @@ def arduino_button():
         
         print(f"Written to Firebase: {new_entry.key}")
         
-        # Send Telegram notification
+        # Send Telegram notification asynchronously to avoid delaying the response
         table_label = table_id.replace('_', ' ').title()
         time_str = datetime.datetime.now().strftime('%H:%M:%S')
         if event_type == 'requested':
@@ -191,7 +229,7 @@ def arduino_button():
         else:
             message = f"✅ <b>Order Served</b>\n{table_label} has been served.\n<i>{time_str}</i>"
         
-        send_telegram_message(message)
+        dispatch_background_notification(message)
         
         return jsonify({
             'success': True,
@@ -207,6 +245,18 @@ def arduino_button():
 def health():
     """Health check endpoint"""
     return jsonify({'status': 'ok', 'service': 'smart-waiter-api'}), 200
+
+
+@app.route('/firebase_requests', methods=['GET'])
+def firebase_requests():
+    """Return request data from Firebase without requiring the browser SDK."""
+    try:
+        ref = db.reference('requests')
+        data = ref.get() or {}
+        return jsonify({'success': True, 'data': data}), 200
+    except Exception as e:
+        print(f'firebase_requests error: {e}')
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/test_telegram', methods=['GET'])
@@ -234,18 +284,8 @@ def train_demand_model():
 
 
 def _classify_table_demand(stats):
-    # replicate the frontend heuristic so we can bootstrap labels
-    total = stats.get('totalRequests', 0)
-    days = stats.get('days', [])
-    recent24 = stats.get('recent24', 0)
-    recentHoursPeak = stats.get('recentHoursPeak', 0)
-
-    unique_days = len(days) if isinstance(days, (list, set)) else int(days)
-    if total >= 8 or unique_days >= 4 or recentHoursPeak >= 3:
-        return 'recurring'
-    if total >= 3 or unique_days >= 2 or recent24 >= 2:
-        return 'occasional'
-    return 'low'
+    """Use the same table-level heuristic as the recommendation UI."""
+    return classify_demand_from_stats(stats)
 
 
 @app.route('/bootstrap_train', methods=['POST', 'GET'])
@@ -367,18 +407,119 @@ def get_busy_period():
 
         # Predict busy period for current time
         current_requests = payload.get('current_request_count', 0)
+        baseline_key = f"{current_day}_{current_hour}"
+        baseline_average = baseline.get(baseline_key)
         period = predict_busy_period(current_requests, current_hour, current_day, baseline)
-        description = describe_busy_period(period, current_hour, current_day)
+        description = describe_busy_period(
+            period,
+            current_hour,
+            current_day,
+            current_requests=current_requests,
+            baseline_average=baseline_average,
+        )
 
         return jsonify({
             'success': True,
             'period': period,
             'description': description,
             'current_hour': current_hour,
-            'current_day': current_day
+            'current_day': current_day,
+            'current_requests': current_requests,
+            'baseline_average': baseline_average,
         }), 200
     except Exception as e:
         print(f'busy_period error: {e}')
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+def classify_wait_time(pending_requests: int, oldest_wait_minutes: float) -> str:
+    """Classify the current service pace in a simple, friendly way."""
+    if pending_requests <= 0:
+        return 'low'
+    if pending_requests >= 6 or oldest_wait_minutes >= 15:
+        return 'high'
+    if pending_requests >= 3 or oldest_wait_minutes >= 8:
+        return 'medium'
+    return 'low'
+
+
+def format_wait_estimate(pending_requests: int, oldest_wait_minutes: float) -> str:
+    """Format a professional wait-time estimate for the advisory card."""
+    if pending_requests <= 0:
+        return 'Under 3 minutes'
+
+    estimate = pending_requests * 2.5 + max(0, oldest_wait_minutes - 6) * 0.5
+    if estimate < 5:
+        return 'Under 5 minutes'
+    if estimate < 10:
+        return '5–9 minutes'
+    if estimate < 15:
+        return '10–14 minutes'
+    return '15+ minutes'
+
+
+def describe_wait_time(level: str, pending_requests: int, oldest_wait_minutes: float) -> dict:
+    """Generate a simple, friendly service update payload."""
+    if pending_requests <= 0:
+        return {
+            'title': 'All good',
+            'message': 'No tables are waiting right now. Everything looks calm and service is moving smoothly.',
+            'estimate': 'Under 3 minutes',
+            'badge': 'Smooth service'
+        }
+
+    estimated_wait = format_wait_estimate(pending_requests, oldest_wait_minutes)
+    oldest_minutes = int(oldest_wait_minutes)
+    oldest_text = f'{oldest_minutes} minute{"s" if oldest_minutes != 1 else ""}'
+
+    if level == 'high':
+        return {
+            'title': 'Needs attention',
+            'message': f'Some tables are still waiting, and the oldest request has been waiting about {oldest_text}. Please check in soon.',
+            'estimate': estimated_wait,
+            'badge': 'Please check in'
+        }
+    if level == 'medium':
+        return {
+            'title': 'Getting busy',
+            'message': f'Some tables are waiting, and the oldest request has been waiting about {oldest_text}. A quick check would help.',
+            'estimate': estimated_wait,
+            'badge': 'Keep an eye on it'
+        }
+    return {
+        'title': 'All good',
+        'message': f'Some tables are waiting, but the oldest request has only been waiting about {oldest_text}. Service is still moving well.',
+        'estimate': estimated_wait,
+        'badge': 'Smooth service'
+    }
+
+
+@app.route('/recommend_wait_time', methods=['POST'])
+def recommend_wait_time():
+    """Provide a rule-based wait-time recommendation separate from demand modeling."""
+    try:
+        payload = request.get_json(silent=True)
+        if not payload:
+            return jsonify({'success': False, 'error': 'Missing JSON payload'}), 400
+
+        pending_requests = int(payload.get('pending_requests', payload.get('current_request_count', 0)))
+        oldest_wait_minutes = float(payload.get('oldest_wait_minutes', payload.get('max_pending_age_minutes', 0)))
+
+        level = classify_wait_time(pending_requests, oldest_wait_minutes)
+        result = describe_wait_time(level, pending_requests, oldest_wait_minutes)
+
+        return jsonify({
+            'success': True,
+            'level': level,
+            'pending_requests': pending_requests,
+            'oldest_wait_minutes': oldest_wait_minutes,
+            'title': result['title'],
+            'message': result['message'],
+            'estimate': result['estimate'],
+            'badge': result['badge']
+        }), 200
+    except Exception as e:
+        print(f'recommend_wait_time error: {e}')
         return jsonify({'success': False, 'error': str(e)}), 500
 
 

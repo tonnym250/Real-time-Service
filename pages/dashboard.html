@@ -162,10 +162,20 @@
       flex: 0 0 auto;
       place-items: center;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(247, 182, 75, 0.16);
       color: #f7b64b;
       font-size: 0.78rem;
       font-weight: 800;
+    }
+
+    .nav-symbol svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
     }
 
     .connection-card {
@@ -657,20 +667,12 @@
       font-weight: 900;
     }
 
-    .event-icon.requested {
-      background: var(--amber-bg);
-      color: var(--amber);
-    }
-
-    .event-icon.served {
-      background: var(--green-bg);
-      color: var(--green);
-    }
-
+    .event-icon.requested,
+    .event-icon.served,
     .event-icon.idle,
     .event-icon.unknown {
-      background: var(--idle-bg);
-      color: var(--idle);
+      background: rgba(247, 182, 75, 0.16);
+      color: #f7b64b;
     }
 
     .event-body {
@@ -932,11 +934,11 @@
             </div>
           </div>
           <nav class="nav-list" aria-label="Dashboard sections">
-            <a href="dashboard.html" class="nav-item active"><span class="nav-symbol">F</span><span>Dashboard</span></a>
-            <a href="analytics.html" class="nav-item"><span class="nav-symbol">A</span><span>Analytics</span></a>
-            <a href="history.html" class="nav-item"><span class="nav-symbol">H</span><span>History</span></a>
-            <a href="alerts.html" class="nav-item"><span class="nav-symbol">🔔</span><span>Alerts</span></a>
-            <a href="recommendation.html" class="nav-item"><span class="nav-symbol">💡</span><span>Recommendations</span></a>
+            <a href="dashboard.html" class="nav-item active"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect></svg></span><span>Dashboard</span></a>
+            <a href="analytics.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V10"></path><path d="M12 19V5"></path><path d="M20 19V13"></path><path d="M4 15h16"></path></svg></span><span>Analytics</span></a>
+            <a href="history.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg></span><span>History</span></a>
+            <a href="alerts.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0"></path><path d="M6 8a4 4 0 0 1 12 0"></path><path d="M5 15h14"></path><path d="M8 15v2a4 4 0 0 0 8 0v-2"></path></svg></span><span>Alerts</span></a>
+            <a href="recommendation.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M19 15l.5 1.5L21 17l-1.5.5L19 19l-.5-1.5L17 17l1.5-.5L19 15z"></path></svg></span><span>Recommendations</span></a>
           </nav>
         </div>
       </div>
@@ -1004,8 +1006,8 @@
       </div>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDGEmefDNithsiaIjsTMSJC4C7E7u_ad_0",
@@ -1157,14 +1159,16 @@
 
       sortedEvents.forEach((event) => {
         if (!event.tableId || event.tableId === "unknown") return;
+        if (!TABLE_IDS.includes(event.tableId)) return;
+
         if (event.eventType === "requested") {
-          pendingByTable[event.tableId] = true;
+          pendingByTable[event.tableId] = (pendingByTable[event.tableId] || 0) + 1;
         } else if (event.eventType === "served") {
-          pendingByTable[event.tableId] = false;
+          pendingByTable[event.tableId] = 0;
         }
       });
 
-      return Object.values(pendingByTable).filter(Boolean).length;
+      return Object.values(pendingByTable).reduce((sum, count) => sum + count, 0);
     }
 
     function normalizeEvent(raw, key) {
@@ -1174,6 +1178,40 @@
       const timestamp = safeRaw.timestamp || safeRaw.time || safeRaw.created_at || safeRaw.createdAt || safeRaw.iso_time || key;
 
       return { id: key, tableId: String(tableId), eventType, timestamp };
+    }
+
+    function deriveTableStateFromEvents(events) {
+      const states = {};
+      const sortedEvents = [...events]
+        .map((event, index) => ({ ...event, index }))
+        .sort((a, b) => {
+          const aTime = parseTimestamp(a.timestamp)?.getTime() || 0;
+          const bTime = parseTimestamp(b.timestamp)?.getTime() || 0;
+          return aTime - bTime || a.index - b.index;
+        });
+
+      sortedEvents.forEach((event) => {
+        if (!event.tableId || event.tableId === "unknown") return;
+        if (!TABLE_IDS.includes(event.tableId)) return;
+
+        const state = states[event.tableId] || { status: "idle", lastEvent: null, lastTime: null, source: "default" };
+
+        if (event.eventType === "requested") {
+          state.status = "waiting";
+          state.lastEvent = event.eventType;
+          state.lastTime = event.timestamp;
+          state.source = "/requests";
+        } else if (event.eventType === "served") {
+          state.status = "served";
+          state.lastEvent = event.eventType;
+          state.lastTime = event.timestamp;
+          state.source = "/requests";
+        }
+
+        states[event.tableId] = state;
+      });
+
+      return states;
     }
 
     function compareEvents(a, b) {
@@ -1365,7 +1403,16 @@
         .map(([key, value]) => normalizeEvent(value, key))
         .sort(compareEvents);
 
-      [...eventsCache].reverse().forEach(applyEvent);
+      const derivedStates = deriveTableStateFromEvents(eventsCache);
+      Object.entries(derivedStates).forEach(([tableId, state]) => {
+        tableState[tableId] = {
+          status: state.status || "idle",
+          lastEvent: state.lastEvent,
+          lastTime: state.lastTime,
+          source: state.source || "/requests"
+        };
+      });
+
       renderAll();
     }
 
@@ -1474,7 +1521,8 @@
       }
     }
 
-    initDashboard();
+    setConnection("connected", "Ready");
+    window.setTimeout(initDashboard, 120);
     window.addEventListener("load", initDashboard);
   </script>
 </body>

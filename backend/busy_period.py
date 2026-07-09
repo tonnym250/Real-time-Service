@@ -56,32 +56,56 @@ def predict_busy_period(
     """
     key = f"{current_day}_{current_hour}"
 
+    # A single request should not look like an overload by itself.
+    # Only sustained spikes above the historical baseline should be flagged.
+    if current_table_requests <= 1:
+        return 'normal'
+
     # Get average for this hour across all weeks
     average = baseline.get(key, 0)
 
-    if average == 0:
+    if average <= 0:
         # No historical data, default to normal
         return 'normal'
 
-    # Simple thresholds
     ratio = current_table_requests / average
 
-    if ratio >= 1.8:
+    if current_table_requests >= 4 and ratio >= 1.8:
         return 'very_busy'
-    elif ratio >= 1.3:
+    elif current_table_requests >= 2 and ratio >= 1.3:
         return 'busy'
     else:
         return 'normal'
 
 
-def describe_busy_period(period: str, hour: int, day: str) -> str:
-    """Generate human-readable description of busy period."""
+def describe_busy_period(
+    period: str,
+    hour: int,
+    day: str,
+    current_requests: int | None = None,
+    baseline_average: float | None = None,
+) -> str:
+    """Generate a concise recommendation-style description for the current period."""
     period_emoji = {'normal': '🟢', 'busy': '🟡', 'very_busy': '🔴'}
     emoji = period_emoji.get(period, '❓')
 
+    if baseline_average is None:
+        return (
+            f"{emoji} There is not enough historical {day} {hour}:00 data yet to compare this hour "
+            "with past patterns, so this is being treated as steady for now."
+        )
+
     if period == 'very_busy':
-        return f"{emoji} Very busy! {day} at {hour}:00 is often overloaded."
-    elif period == 'busy':
-        return f"{emoji} Busy period. {day} at {hour}:00 typically needs extra hands."
-    else:
-        return f"{emoji} Normal period. {day} at {hour}:00 is usually quiet."
+        return (
+            f"{emoji} Compared with the usual {day} {hour}:00 pattern, this hour is running well above normal. "
+            "Add support now."
+        )
+    if period == 'busy':
+        return (
+            f"{emoji} Compared with the usual {day} {hour}:00 pattern, this hour is busier than normal. "
+            "A little extra support may help."
+        )
+    return (
+        f"{emoji} Compared with the usual {day} {hour}:00 pattern, this hour is in line with normal demand. "
+        "Service looks steady."
+    )

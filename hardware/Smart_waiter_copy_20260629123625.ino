@@ -40,13 +40,15 @@ Table tables[NUM_TABLES] = {
 };
 
 // ---------- Timing ----------
-const unsigned long DEBOUNCE_MS      = 250;      // ignore repeat presses within this window
-const unsigned long DISPLAY_DURATION = 10000;    // how long a message stays before default screen
-const unsigned long WINDOW_DURATION  = 120000;   // 2 minutes
-const int           MAX_REQUESTS     = 10;
-const int           HTTP_TIMEOUT_MS  = 10000;    // 10s timeout for slower requests
+const unsigned long DEBOUNCE_MS           = 250;      // ignore repeat presses within this window
+const unsigned long DISPLAY_DURATION       = 10000;    // how long a message stays before default screen
+const unsigned long WINDOW_DURATION        = 120000;   // 2 minutes
+const int           MAX_REQUESTS           = 10;
+const int           HTTP_TIMEOUT_MS        = 2000;     // faster request timeout to avoid long waits
+const unsigned long NTP_UPDATE_INTERVAL_MS = 60000;    // only refresh time once per minute
 
 unsigned long displayTimeout = 0;  // one shared timer for returning to the default screen
+unsigned long lastNtpUpdate = 0;
 
 // ---------- NTP ----------
 WiFiUDP   ntpUDP;
@@ -91,6 +93,7 @@ bool callAPIServer(String tableId, String eventType) {
   http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
   http.setTimeout(HTTP_TIMEOUT_MS);
+  http.setConnectTimeout(HTTP_TIMEOUT_MS);
 
   String payload = "{\"table_id\":\"" + tableId + "\",\"event_type\":\"" + eventType + "\"}";
   Serial.println("Calling API: " + payload);
@@ -169,11 +172,14 @@ void handleTable(int i, unsigned long epoch, const String& currentTime) {
       }
       if (t.requestCount < MAX_REQUESTS) {
         t.requestCount++;
+        showMessage("T" + String(n) + " REQUEST SENT", "SENDING...");
         logEvent(t.id, "requested", epoch);
       }
       t.requestActive = true;
     }
-    showMessage("T" + String(n) + " REQUEST SENT", "TELEGRAM SENT!");
+    if (!t.requestActive) {
+      showMessage("T" + String(n) + " REQUEST SENT", "TELEGRAM SENT!");
+    }
   }
 
   // ----- Waiter confirm (falling edge + debounce) -----
@@ -185,6 +191,7 @@ void handleTable(int i, unsigned long epoch, const String& currentTime) {
       Serial.println("Table " + String(n) + " Confirm: Invalid NTP time");
     } else {
       Serial.println("Table " + String(n) + " Confirm at: " + currentTime);
+      showMessage("T" + String(n) + " THANK YOU", "SENDING...");
       logEvent(t.id, "served", epoch);
       t.requestCount  = 0;
       t.requestActive = false;
@@ -280,7 +287,11 @@ void setup() {
 //                          Loop
 // ============================================================
 void loop() {
-  timeClient.update();
+  if (millis() - lastNtpUpdate > NTP_UPDATE_INTERVAL_MS || lastNtpUpdate == 0) {
+    timeClient.update();
+    lastNtpUpdate = millis();
+  }
+
   unsigned long epoch = timeClient.getEpochTime();
   String currentTime  = iso8601FromEpoch(epoch);
 
