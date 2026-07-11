@@ -1,5 +1,6 @@
 """Simple busy period prediction based on historical request patterns."""
 import datetime
+import os
 from typing import Dict, List, Any
 
 
@@ -36,6 +37,23 @@ def calculate_busy_baseline(events: List[Dict[str, Any]]) -> Dict[str, float]:
     return averages
 
 
+def _get_ratio_thresholds() -> Dict[str, float]:
+    """Return configurable thresholds for busy-period classification."""
+    def _read_threshold(name: str, default: float) -> float:
+        raw = os.getenv(name, "").strip()
+        if not raw:
+            return default
+        try:
+            return float(raw)
+        except ValueError:
+            return default
+
+    return {
+        'busy': _read_threshold('BUSY_PERIOD_BUSY_RATIO_THRESHOLD', 1.3),
+        'very_busy': _read_threshold('BUSY_PERIOD_VERY_BUSY_RATIO_THRESHOLD', 1.8),
+    }
+
+
 def predict_busy_period(
     current_table_requests: int,
     current_hour: int,
@@ -68,11 +86,22 @@ def predict_busy_period(
         # No historical data, default to normal
         return 'normal'
 
+<<<<<<< HEAD
+=======
+    # Simple thresholds with optional environment overrides
+>>>>>>> bff27a1 (update project)
     ratio = current_table_requests / average
+    thresholds = _get_ratio_thresholds()
 
+<<<<<<< HEAD
     if current_table_requests >= 4 and ratio >= 1.8:
         return 'very_busy'
     elif current_table_requests >= 2 and ratio >= 1.3:
+=======
+    if ratio >= thresholds['very_busy']:
+        return 'very_busy'
+    elif ratio >= thresholds['busy']:
+>>>>>>> bff27a1 (update project)
         return 'busy'
     else:
         return 'normal'

@@ -42,6 +42,7 @@ def serve_page(filename):
 
 # Firebase configuration
 FIREBASE_DATABASE_URL = os.getenv("FIREBASE_DATABASE_URL", "https://smartwaiter-c9a2e-default-rtdb.firebaseio.com")
+AUTO_RETRAIN_STATE_PATH = os.path.join(os.path.dirname(__file__), '.auto_retrain_state.json')
 
 # Initialize Firebase with service account key
 try:
@@ -101,6 +102,7 @@ def send_telegram_message(message):
         return False
 
 
+<<<<<<< HEAD
 def dispatch_background_notification(message):
     """Send Telegram notifications asynchronously so the API responds faster."""
     try:
@@ -110,12 +112,116 @@ def dispatch_background_notification(message):
     except Exception as e:
         print(f"Notification dispatch error: {e}")
         return False
+=======
+def is_cleanup_enabled():
+    """Return whether request cleanup is explicitly enabled."""
+    value = os.getenv("ENABLE_REQUEST_CLEANUP", "").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
+def should_auto_retrain(total_requests: int, last_trained_total: int, threshold: int = 100) -> bool:
+    """Return whether the model should retrain based on new request volume."""
+    if threshold <= 0:
+        return False
+    return max(0, total_requests - last_trained_total) >= threshold
+
+
+def load_auto_retrain_state() -> dict:
+    """Load persisted metadata for the auto-retraining threshold tracker."""
+    if not os.path.exists(AUTO_RETRAIN_STATE_PATH):
+        return {'last_trained_total': 0}
+    try:
+        with open(AUTO_RETRAIN_STATE_PATH, 'r', encoding='utf-8') as handle:
+            return json.load(handle) or {'last_trained_total': 0}
+    except Exception:
+        return {'last_trained_total': 0}
+
+
+def save_auto_retrain_state(last_trained_total: int) -> None:
+    """Persist the latest request count used for the last successful retraining."""
+    with open(AUTO_RETRAIN_STATE_PATH, 'w', encoding='utf-8') as handle:
+        json.dump({'last_trained_total': int(last_trained_total)}, handle)
+
+
+def get_last_trained_total() -> int:
+    """Return the last request count used for a successful retraining."""
+    return int(load_auto_retrain_state().get('last_trained_total', 0))
+
+
+def maybe_auto_retrain(total_requests: int, last_trained_total: int, threshold: int = 100):
+    """Auto-retrain if enough new requests have accumulated since the last training."""
+    if not should_auto_retrain(total_requests, last_trained_total, threshold):
+        return {'triggered': False, 'reason': 'threshold_not_reached'}
+
+    try:
+        ref = db.reference('requests')
+        raw = ref.get() or {}
+        stats_by_table = {}
+        now = datetime.datetime.utcnow()
+
+        for key, event in raw.items():
+            try:
+                if not event or event.get('event_type') != 'requested':
+                    continue
+                table_id = event.get('table_id')
+                ts = event.get('timestamp') or event.get('iso_time') or event.get('time')
+                if not ts:
+                    continue
+                try:
+                    event_time = datetime.datetime.fromisoformat(ts.replace('Z', '+00:00'))
+                except Exception:
+                    event_time = datetime.datetime.utcnow()
+
+                hour = event_time.hour
+                weekday = event_time.strftime('%A')
+
+                s = stats_by_table.setdefault(table_id, {
+                    'totalRequests': 0,
+                    'recent24': 0,
+                    'days': set(),
+                    'hourCounts': {},
+                    'dayCounts': {},
+                    'recentHoursPeak': 0,
+                })
+
+                s['totalRequests'] += 1
+                s['days'].add(weekday)
+                s['hourCounts'][hour] = s['hourCounts'].get(hour, 0) + 1
+                s['dayCounts'][weekday] = s['dayCounts'].get(weekday, 0) + 1
+                s['recentHoursPeak'] = max(s['recentHoursPeak'], s['hourCounts'][hour])
+            except Exception as e:
+                print('auto-retrain error processing event', e)
+
+        records = []
+        for table_id, s in stats_by_table.items():
+            s_copy = dict(s)
+            s_copy['days'] = set(s_copy.get('days', []))
+            label = _classify_table_demand(s_copy)
+            rec = make_record(table_id, s_copy)
+            rec['label'] = label
+            records.append(rec)
+
+        if len(records) < 3:
+            return {'triggered': False, 'reason': 'not_enough_records'}
+
+        result = train_model(records, save=True)
+        save_auto_retrain_state(total_requests)
+        return {'triggered': True, 'trained_records': len(records), 'accuracy': result.get('accuracy')}
+    except Exception as e:
+        print('auto-retrain error', e)
+        return {'triggered': False, 'reason': str(e)}
+>>>>>>> bff27a1 (update project)
 
 
 def cleanup_old_requests(max_age_minutes=10):
-    """Auto-cleanup old pending requests to prevent stale alerts.
-    Marks requests older than max_age_minutes that are still 'requested' as 'expired'.
+    """Optionally mark old pending requests as expired.
+
+    Cleanup is disabled by default so Firebase request history remains intact.
+    Set ENABLE_REQUEST_CLEANUP=true to enable expiration handling.
     """
+    if not is_cleanup_enabled():
+        return {'cleaned': 0, 'message': 'Cleanup disabled; request history preserved'}
+
     try:
         ref = db.reference('requests')
         snapshot = ref.get()
@@ -220,6 +326,19 @@ def arduino_button():
         })
         
         print(f"Written to Firebase: {new_entry.key}")
+
+        # Auto-retrain when enough new requests have accumulated since the last training.
+        try:
+            threshold = int(os.getenv("AUTO_RETRAIN_THRESHOLD", "100"))
+            last_trained_total = get_last_trained_total()
+            snapshot = ref.get() or {}
+            total_requests = sum(1 for event in snapshot.values() if event and event.get('event_type') == 'requested')
+            if should_auto_retrain(total_requests, last_trained_total, threshold):
+                result = maybe_auto_retrain(total_requests, last_trained_total, threshold)
+                if result.get('triggered'):
+                    print('Auto retraining triggered after threshold reached')
+        except Exception as e:
+            print(f'Auto retraining check failed: {e}')
         
         # Send Telegram notification asynchronously to avoid delaying the response
         table_label = table_id.replace('_', ' ').title()
@@ -284,8 +403,21 @@ def train_demand_model():
 
 
 def _classify_table_demand(stats):
+<<<<<<< HEAD
     """Use the same table-level heuristic as the recommendation UI."""
     return classify_demand_from_stats(stats)
+=======
+    # Updated thresholds: 20=high, 10=medium, 5=low
+    total = stats.get('totalRequests', 0)
+    
+    if total >= 20:
+        return 'recurring'  # High demand
+    if total >= 10:
+        return 'occasional'  # Medium demand
+    if total >= 5:
+        return 'low'  # Low demand but notable
+    return 'low'  # Very low/minimal demand
+>>>>>>> bff27a1 (update project)
 
 
 @app.route('/bootstrap_train', methods=['POST', 'GET'])
@@ -369,14 +501,35 @@ def bootstrap_train():
 def predict_demand():
     """Predict table demand labels using the trained Random Forest model."""
     try:
-        payload = request.get_json()
-        if not payload or 'stats_by_table' not in payload:
-            return jsonify({'error': 'Missing stats_by_table in request body'}), 400
+        payload = request.get_json() or {}
+        stats_by_table = payload.get('stats_by_table') or {}
+
+        if not stats_by_table:
+            # Fall back to the Firebase table registry when the client did not send stats.
+            tables_ref = db.reference('tables')
+            tables = tables_ref.get() or {}
+            stats_by_table = {
+                table_id: {
+                    'totalRequests': 0,
+                    'recent24': 0,
+                    'days': set(),
+                    'hourCounts': {},
+                    'dayCounts': {},
+                    'recentHoursPeak': 0
+                }
+                for table_id in tables.keys()
+                if table_id != 'table_99'
+            }
 
         records = []
-        for table_id, stats in payload['stats_by_table'].items():
+        for table_id, stats in stats_by_table.items():
+            if not table_id:
+                continue
             record = make_record(table_id, stats)
             records.append(record)
+
+        if not records:
+            return jsonify({'success': True, 'predictions': {}}), 200
 
         predictions = predict(records)
         return jsonify({'success': True, 'predictions': dict(zip([r['table_id'] for r in records], predictions))}), 200
@@ -433,7 +586,11 @@ def get_busy_period():
 
 
 def classify_wait_time(pending_requests: int, oldest_wait_minutes: float) -> str:
+<<<<<<< HEAD
     """Classify the current service pace in a simple, friendly way."""
+=======
+    """Classify a wait-time level using a queue-based rule."""
+>>>>>>> bff27a1 (update project)
     if pending_requests <= 0:
         return 'low'
     if pending_requests >= 6 or oldest_wait_minutes >= 15:
@@ -459,6 +616,7 @@ def format_wait_estimate(pending_requests: int, oldest_wait_minutes: float) -> s
 
 
 def describe_wait_time(level: str, pending_requests: int, oldest_wait_minutes: float) -> dict:
+<<<<<<< HEAD
     """Generate a simple, friendly service update payload."""
     if pending_requests <= 0:
         return {
@@ -491,6 +649,39 @@ def describe_wait_time(level: str, pending_requests: int, oldest_wait_minutes: f
         'message': f'Some tables are waiting, but the oldest request has only been waiting about {oldest_text}. Service is still moving well.',
         'estimate': estimated_wait,
         'badge': 'Smooth service'
+=======
+    """Generate a professional wait-time recommendation payload."""
+    if pending_requests <= 0:
+        return {
+            'title': 'Low wait time',
+            'message': 'There are no active pending requests. Current service levels are clear.',
+            'estimate': 'Under 3 minutes',
+            'badge': 'On track'
+        }
+
+    estimated_wait = format_wait_estimate(pending_requests, oldest_wait_minutes)
+    status_line = f'{pending_requests} active pending request{"s" if pending_requests != 1 else ""}, oldest pending request {int(oldest_wait_minutes)} minute{"s" if int(oldest_wait_minutes) != 1 else ""}.'
+
+    if level == 'high':
+        return {
+            'title': 'High wait advisory',
+            'message': f'{status_line} Guests may be waiting longer than usual, so service support should be prioritized now.',
+            'estimate': estimated_wait,
+            'badge': 'Act now'
+        }
+    if level == 'medium':
+        return {
+            'title': 'Moderate wait advisory',
+            'message': f'{status_line} Service demand is building, and staff should keep an eye on the queue.',
+            'estimate': estimated_wait,
+            'badge': 'Stay alert'
+        }
+    return {
+        'title': 'Low wait advisory',
+        'message': f'{status_line} Service is flowing normally and the queue remains manageable.',
+        'estimate': estimated_wait,
+        'badge': 'On track'
+>>>>>>> bff27a1 (update project)
     }
 
 
@@ -550,16 +741,18 @@ if __name__ == '__main__':
     print(f"Listening on 0.0.0.0:{port}")
     print(f"Endpoint: http://0.0.0.0:{port}/arduino_button")
     
-    # Run initial cleanup
-    cleanup_old_requests(max_age_minutes=10)
-    
-    # Background cleanup thread (runs every 5 minutes)
-    def background_cleanup():
-        while True:
-            time.sleep(5 * 60)  # 5 minutes
-            cleanup_old_requests(max_age_minutes=10)
-    
-    cleanup_thread = Thread(target=background_cleanup, daemon=True)
-    cleanup_thread.start()
+    if is_cleanup_enabled():
+        cleanup_old_requests(max_age_minutes=10)
+        
+        # Background cleanup thread (runs every 5 minutes)
+        def background_cleanup():
+            while True:
+                time.sleep(5 * 60)  # 5 minutes
+                cleanup_old_requests(max_age_minutes=10)
+        
+        cleanup_thread = Thread(target=background_cleanup, daemon=True)
+        cleanup_thread.start()
+    else:
+        print("Request cleanup disabled; old requests will remain in Firebase.")
     
     app.run(host='0.0.0.0', port=port, debug=False)

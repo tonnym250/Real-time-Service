@@ -137,36 +137,73 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      min-height: 38px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      color: rgba(243, 247, 244, 0.72);
-      font-size: 0.9rem;
-      font-weight: 600;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: rgba(243, 247, 244, 0.74);
+      font-size: 0.92rem;
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
+      transition: background 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease;
     }
 
     .nav-item.active {
-      background: rgba(255, 255, 255, 0.09);
+      background: linear-gradient(90deg, rgba(247, 182, 75, 0.16), rgba(255, 255, 255, 0.06));
+      border-color: rgba(247, 182, 75, 0.24);
       color: #ffffff;
+      transform: translateX(2px);
     }
 
     .nav-item:hover {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.07);
+      color: #ffffff;
     }
 
     .nav-symbol {
       display: inline-grid;
-      width: 22px;
-      height: 22px;
+      width: 28px;
+      height: 28px;
       flex: 0 0 auto;
       place-items: center;
+<<<<<<< HEAD
       border-radius: 6px;
       background: rgba(247, 182, 75, 0.16);
+=======
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+>>>>>>> bff27a1 (update project)
       color: #f7b64b;
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: 800;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .nav-item .nav-badge {
+      margin-left: auto;
+      margin-right: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border-radius: 50%;
+      background: #d32f2f;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      line-height: 1;
+      flex-shrink: 0;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .nav-item .nav-badge.visible {
+      opacity: 1;
+      transform: scale(1);
     }
 
     .nav-symbol svg {
@@ -372,11 +409,14 @@
       background: linear-gradient(180deg, #e8f2ff 0%, #ffffff 100%);
     }
 
+<<<<<<< HEAD
     .recommendation-card .rec-icon {
       background: rgba(23, 35, 31, 0.06);
       color: var(--ink);
     }
 
+=======
+>>>>>>> bff27a1 (update project)
     .rec-icon {
       display: grid;
       width: 60px;
@@ -387,6 +427,7 @@
       font-weight: 700;
     }
 
+<<<<<<< HEAD
     .rec-icon svg {
       width: 24px;
       height: 24px;
@@ -400,13 +441,23 @@
     .recommendation-card.high .rec-icon,
     .recommendation-card.recurring .rec-icon {
       background: rgba(194, 65, 59, 0.12);
+=======
+    .recommendation-card.high .rec-icon,
+    .recommendation-card.recurring .rec-icon {
+      background: var(--red-bg);
+>>>>>>> bff27a1 (update project)
       color: var(--red);
     }
 
     .recommendation-card.medium .rec-icon,
+<<<<<<< HEAD
     .recommendation-card.occasional .rec-icon,
     .recommendation-card.wait-time .rec-icon {
       background: rgba(217, 138, 18, 0.16);
+=======
+    .recommendation-card.occasional .rec-icon {
+      background: var(--amber-bg);
+>>>>>>> bff27a1 (update project)
       color: var(--amber);
     }
 
@@ -562,11 +613,19 @@
             </div>
           </div>
           <nav class="nav-list" aria-label="Dashboard sections">
+<<<<<<< HEAD
             <a href="dashboard.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect></svg></span><span>Dashboard</span></a>
             <a href="analytics.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V10"></path><path d="M12 19V5"></path><path d="M20 19V13"></path><path d="M4 15h16"></path></svg></span><span>Analytics</span></a>
             <a href="history.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg></span><span>History</span></a>
             <a href="alerts.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0"></path><path d="M6 8a4 4 0 0 1 12 0"></path><path d="M5 15h14"></path><path d="M8 15v2a4 4 0 0 0 8 0v-2"></path></svg></span><span>Alerts</span></a>
             <a href="recommendation.html" class="nav-item active"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M19 15l.5 1.5L21 17l-1.5.5L19 19l-.5-1.5L17 17l1.5-.5L19 15z"></path></svg></span><span>Recommendations</span></a>
+=======
+            <a href="dashboard.html" class="nav-item" aria-label="Open dashboard"><span class="nav-symbol">⌂</span><span>Dashboard</span></a>
+            <a href="analytics.html" class="nav-item" aria-label="Open analytics"><span class="nav-symbol">◔</span><span>Analytics</span></a>
+            <a href="history.html" class="nav-item" aria-label="Open history"><span class="nav-symbol">⏱</span><span>History</span></a>
+            <a href="alerts.html" class="nav-item" aria-label="Open alerts"><span class="nav-symbol">🔔</span><span>Alerts</span><span id="alertsNavBadge" class="nav-badge">0</span></a>
+            <a href="recommendation.html" class="nav-item active" aria-label="Open recommendations"><span class="nav-symbol">✦</span><span>Recommendations</span></a>
+>>>>>>> bff27a1 (update project)
           </nav>
         </div>
       </div>
@@ -587,7 +646,7 @@
       <header class="topbar">
         <div class="page-heading">
           <p class="eyebrow">Operational insights</p>
-          <h2>Intelligent recommendations & optimizations</h2>
+          <h2>Helpful recommendations for your service</h2>
         </div>
         <div class="toolbar">
           <button id="retrainButton" class="retrain-button" type="button" title="Retrain recommendation model" aria-label="Retrain recommendation model">Retrain model</button>
@@ -598,17 +657,29 @@
         <article class="recommendation-card medium" id="placeholderCard">
           <div class="rec-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M19 15l.5 1.5L21 17l-1.5.5L19 19l-.5-1.5L17 17l1.5-.5L19 15z"></path></svg></div>
           <div class="rec-content">
+<<<<<<< HEAD
             <div class="rec-title">Recommendations loading</div>
             <div class="rec-description">Live recommendations will appear here as soon as the data feed is available.</div>
             <div class="rec-badge">Stand by</div>
+=======
+            <div class="rec-title">Smart suggestions are almost ready</div>
+            <div class="rec-description">This section will soon show helpful predictions and service tips based on your recent table activity and customer patterns.</div>
+            <div class="rec-badge">🟡 Coming soon</div>
+>>>>>>> bff27a1 (update project)
           </div>
         </article>
       </div>
     </main>
   </div>
 
+<<<<<<< HEAD
   <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+=======
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="../scripts/alert-badge.js"></script>
+>>>>>>> bff27a1 (update project)
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDGEmefDNithsiaIjsTMSJC4C7E7u_ad_0",
@@ -628,6 +699,7 @@
 
     // Backend base URL — override with window.BACKEND_URL if needed
     const BACKEND_URL = window.BACKEND_URL || 'http://127.0.0.1:5001';
+<<<<<<< HEAD
 
     const TABLE_LABELS = {
       table_1: "Table 1",
@@ -636,22 +708,55 @@
       table_4: "Table 4",
       table_5: "Table 5"
     };
+=======
+>>>>>>> bff27a1 (update project)
 
     const DEMAND_LABELS = {
       recurring: {
         title: "High priority",
+<<<<<<< HEAD
         icon: "alert",
+=======
+        icon: "🔥",
+>>>>>>> bff27a1 (update project)
         badge: "Quick attention"
       },
       occasional: {
         title: "Medium priority",
+<<<<<<< HEAD
         icon: "trend",
+=======
+        icon: "⚡",
+>>>>>>> bff27a1 (update project)
         badge: "Monitor closely"
       },
       low: {
         title: "Low priority",
+<<<<<<< HEAD
         icon: "check",
         badge: "No rush"
+=======
+        icon: "🌿",
+        badge: "No rush"
+      }
+    };
+
+    const WAIT_TIME_LABELS = {
+      high: {
+        title: "High wait time",
+        icon: "🔴",
+        badge: "Immediate attention"
+      },
+      medium: {
+        title: "Moderate wait time",
+        icon: "🟡",
+        badge: "Monitor closely"
+      },
+      low: {
+        title: "Low wait time",
+        icon: "🟢",
+        badge: "On track"
+>>>>>>> bff27a1 (update project)
       }
     };
 
@@ -702,7 +807,102 @@
     }
 
     function normalizeTableName(tableId) {
-      return TABLE_LABELS[tableId] || tableId.replace(/_/g, " ").replace(/\b\w/g, (chr) => chr.toUpperCase());
+      if (!tableId) return "Unknown table";
+      const raw = String(tableId).trim();
+      const match = raw.match(/table[_-]?(\d+)/i);
+      if (match) return `Table ${match[1]}`;
+      return raw.replace(/_/g, " ").replace(/\b\w/g, (chr) => chr.toUpperCase());
+    }
+
+    function parseEventTimestamp(event) {
+      const ts = event.timestamp || event.iso_time || event.time || event.created_at;
+      const date = ts ? new Date(ts) : new Date(NaN);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function computePendingQueueStats(events) {
+      const now = new Date();
+      const pendingByTable = {};
+
+      const sortedEvents = events
+        .map((event) => ({ event, timestamp: parseEventTimestamp(event) }))
+        .filter((item) => item.timestamp)
+        .sort((a, b) => a.timestamp - b.timestamp);
+
+      sortedEvents.forEach(({ event, timestamp }) => {
+        const type = (event.event_type || event.eventType || '').toLowerCase();
+        const tableId = event.table_id || event.tableId;
+        if (!tableId || !type) return;
+
+        if (type === 'requested') {
+          const queue = pendingByTable[tableId] || [];
+          queue.push(timestamp);
+          pendingByTable[tableId] = queue;
+        } else if (type === 'served') {
+          const queue = pendingByTable[tableId] || [];
+          if (queue.length) {
+            queue.shift();
+            pendingByTable[tableId] = queue;
+          }
+        }
+      });
+
+      let pendingRequests = 0;
+      let oldestWaitMinutes = Infinity;
+      Object.values(pendingByTable).forEach((queue) => {
+        pendingRequests += queue.length;
+        queue.forEach((timestamp) => {
+          const ageMinutes = (now - timestamp) / 60000;
+          oldestWaitMinutes = Math.min(oldestWaitMinutes, ageMinutes);
+        });
+      });
+
+      return {
+        pendingRequests,
+        oldest_wait_minutes: Number.isFinite(oldestWaitMinutes) ? oldestWaitMinutes : 0
+      };
+    }
+
+    function countCurrentHourRequests(events) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentDay = now.toLocaleDateString(undefined, { weekday: 'long' });
+      return events.reduce((count, event) => {
+        const timestamp = parseEventTimestamp(event);
+        if (!timestamp) return count;
+        const eventHour = timestamp.getHours();
+        const eventDay = timestamp.toLocaleDateString(undefined, { weekday: 'long' });
+        return count + ((eventHour === currentHour && eventDay === currentDay && (event.event_type || event.eventType || '').toLowerCase() === 'requested') ? 1 : 0);
+      }, 0);
+    }
+
+    function getHistoricalHourStats(events) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      
+      // Count requests for the same hour but from different days (historical)
+      const historicalHourCounts = [];
+      events.forEach((event) => {
+        const timestamp = parseEventTimestamp(event);
+        if (!timestamp) return;
+        const eventHour = timestamp.getHours();
+        const eventDay = timestamp.toLocaleDateString(undefined, { weekday: 'long' });
+        const isCurrentDay = eventDay === now.toLocaleDateString(undefined, { weekday: 'long' });
+        const isRequested = (event.event_type || event.eventType || '').toLowerCase() === 'requested';
+        
+        // Count historical requests for this hour (excluding today)
+        if (eventHour === currentHour && !isCurrentDay && isRequested) {
+          historicalHourCounts.push(1);
+        }
+      });
+      
+      const historicalCount = historicalHourCounts.length;
+      const averageHistorical = historicalCount > 0 ? Math.round(historicalCount / Math.max(1, new Date().getDay() - 1 || 7)) : 0;
+      
+      return {
+        historicalCount: historicalCount,
+        averageHistorical: averageHistorical
+      };
     }
 
     function parseEventTimestamp(event) {
@@ -770,13 +970,25 @@
     }
 
     function classifyTableDemand(stats) {
+<<<<<<< HEAD
       if (stats.totalRequests >= 20 || stats.days.size >= 5 || stats.recentHoursPeak >= 5) {
         return "recurring";
       }
       if (stats.totalRequests >= 10 || stats.days.size >= 3 || stats.recent24 >= 4) {
         return "occasional";
+=======
+      // Updated thresholds: 20=high, 10=medium, 5=low
+      if (stats.totalRequests >= 20) {
+        return "recurring";  // High demand
       }
-      return "low";
+      if (stats.totalRequests >= 10) {
+        return "occasional";  // Medium demand
+>>>>>>> bff27a1 (update project)
+      }
+      if (stats.totalRequests >= 5) {
+        return "low";  // Low demand but notable
+      }
+      return "low";  // Very low/minimal demand
     }
 
     function describePattern(stats, tableName) {
@@ -784,6 +996,7 @@
       const peakDay = stats.topDay || "the week";
       const hour = Number(stats.topHour) || 0;
       const lines = [];
+<<<<<<< HEAD
 
       if (demandType === "recurring") {
         if (11 <= hour && hour < 15) {
@@ -797,6 +1010,43 @@
         lines.push(`${tableName} has moderate demand and is worth monitoring on ${peakDay} during busy periods.`);
       } else {
         lines.push(`${tableName} is quiet right now and usually stays calm after service.`);
+=======
+      const requestCount = stats.totalRequests || 0;
+
+      if (requestCount === 0) {
+        lines.push(`Recommendation: keep ${tableName} on normal monitoring; no extra action is needed yet.`);
+        return lines.join(" ");
+      }
+
+      if (stats.demandType === "recurring") {
+        if (stats.topHour != null && stats.topHour >= 11 && stats.topHour < 15) {
+          lines.push(`Recommendation: prepare extra support around lunch because ${tableName} often needs attention then.`);
+        } else if (stats.topHour != null && stats.topHour >= 17 && stats.topHour < 21) {
+          lines.push(`Recommendation: keep staff ready for dinner rushes because ${tableName} often repeats requests.`);
+        } else if (stats.topHour != null) {
+          lines.push(`Recommendation: stay ready around ${stats.topHour}:00 because ${tableName} is showing repeated demand.`);
+        } else {
+          lines.push(`Recommendation: keep support nearby because ${tableName} is showing repeated demand.`);
+        }
+      } else if (stats.demandType === "occasional") {
+        if (stats.topHour != null) {
+          lines.push(`Recommendation: check in around ${stats.topHour}:00 so ${tableName} does not wait too long.`);
+        } else {
+          lines.push(`Recommendation: monitor ${tableName} closely in the next hour so service stays smooth.`);
+        }
+      } else {
+        if (stats.lastRequestAgeHours <= 24) {
+          lines.push(`Recommendation: keep ${tableName} on normal service flow; demand is still light.`);
+        } else {
+          lines.push(`Recommendation: no special action is needed for ${tableName} right now.`);
+        }
+      }
+
+      if (stats.topDay && stats.demandType !== "low") {
+        lines.push(`Best time to prepare is ${stats.topDay}.`);
+      } else if (stats.topDay) {
+        lines.push(`Most activity appears on ${stats.topDay}.`);
+>>>>>>> bff27a1 (update project)
       }
 
       return lines.join(" ");
@@ -817,12 +1067,100 @@
       return card;
     }
 
+<<<<<<< HEAD
+=======
+    function buildMlUnavailableCard() {
+      const card = document.createElement("article");
+      card.className = "recommendation-card low";
+      card.innerHTML = `
+        <div class="rec-icon">🧠</div>
+        <div class="rec-content">
+          <div class="rec-title">Smart demand insights are not ready yet</div>
+          <div class="rec-description">The smart model is still warming up. Please retrain it so this page can show helpful demand suggestions.</div>
+          <div class="rec-badge">Needs training</div>
+        </div>
+      `;
+      return card;
+    }
+
+    function buildCustomerPatternCard(predictions) {
+      const predictionValues = Object.values(predictions || {}).filter(Boolean);
+      if (predictionValues.length === 0) {
+        return buildMlUnavailableCard();
+      }
+
+      const recurringCount = predictionValues.filter((value) => value === "recurring").length;
+      const occasionalCount = predictionValues.filter((value) => value === "occasional").length;
+
+      const summary = recurringCount > 0
+        ? `Based on the latest live activity, the system expects repeat demand in ${recurringCount} table${recurringCount !== 1 ? "s" : ""}, so the team should prepare earlier.`
+        : occasionalCount > 0
+          ? `Based on the latest live activity, the model sees short bursts of demand in ${occasionalCount} table${occasionalCount !== 1 ? "s" : ""}, so staff should stay ready.`
+          : `Based on the latest live activity, the model is still learning, but it can already support calm service planning.`;
+
+      const card = document.createElement("article");
+      card.className = "recommendation-card medium";
+      card.innerHTML = `
+        <div class="rec-icon">📈</div>
+        <div class="rec-content">
+          <div class="rec-title">Demand outlook</div>
+          <div class="rec-description">${summary}</div>
+          <div class="rec-badge">From ML prediction</div>
+        </div>
+      `;
+      return card;
+    }
+
+    function buildPriorityTableCard(tableName, stats, prediction) {
+      const actionText = prediction === "recurring"
+        ? `${tableName} is showing the strongest repeat demand, so prepare support earlier.`
+        : prediction === "occasional"
+          ? `${tableName} may need a quick check soon, so keep service attention nearby.`
+          : `${tableName} is still quiet, so keep normal monitoring for now.`;
+
+      const card = document.createElement("article");
+      card.className = "recommendation-card medium";
+      card.innerHTML = `
+        <div class="rec-icon">🎯</div>
+        <div class="rec-content">
+          <div class="rec-title">Priority action</div>
+          <div class="rec-description">${actionText}</div>
+          <div class="rec-badge">Guided by ML result</div>
+        </div>
+      `;
+      return card;
+    }
+
+    function serializeStatsForMl(statsByTable) {
+      const serialized = {};
+      Object.entries(statsByTable).forEach(([tableId, stats]) => {
+        serialized[tableId] = {
+          totalRequests: stats.totalRequests || 0,
+          recent24: stats.recent24 || 0,
+          recent1h: stats.recent1h || 0,
+          days: Array.from(stats.days || []),
+          hourCounts: stats.hourCounts || {},
+          dayCounts: stats.dayCounts || {},
+          recentHoursPeak: stats.recentHoursPeak || 0,
+          topHour: stats.topHour ?? null,
+          topDay: stats.topDay ?? null,
+          lastRequestAgeHours: stats.lastRequestAgeHours ?? Infinity
+        };
+      });
+      return serialized;
+    }
+
+>>>>>>> bff27a1 (update project)
     function buildWaitTimeCard(waitInfo) {
       const label = WAIT_TIME_LABELS[waitInfo.level] || WAIT_TIME_LABELS.low;
       const card = document.createElement("article");
       card.className = `recommendation-card wait-time ${waitInfo.level}`;
       card.innerHTML = `
+<<<<<<< HEAD
         <div class="rec-icon" aria-hidden="true">${renderIcon(label.icon)}</div>
+=======
+        <div class="rec-icon">${label.icon}</div>
+>>>>>>> bff27a1 (update project)
         <div class="rec-content">
           <div class="rec-title">Wait-Time Advisory — ${label.title}</div>
           <div class="rec-description">${waitInfo.message}</div>
@@ -837,8 +1175,11 @@
       const statsByTable = {};
 
       events.forEach((event) => {
-        if (!event || event.event_type !== "requested") return;
-        const tableId = event.table_id;
+        if (!event) return;
+        const eventType = (event.event_type || event.eventType || "").toLowerCase();
+        if (eventType !== "requested") return;
+        const tableId = event.table_id || event.tableId;
+        if (!tableId) return;
         const timestamp = new Date(event.timestamp || event.iso_time || event.time || event.created_at);
         if (Number.isNaN(timestamp.getTime())) return;
 
@@ -906,6 +1247,10 @@
       const queueStats = computePendingQueueStats(events);
       const currentRequests = queueStats.pendingRequests;
       const currentHourRequests = countCurrentHourRequests(events);
+<<<<<<< HEAD
+=======
+      const historicalStats = getHistoricalHourStats(events);
+>>>>>>> bff27a1 (update project)
       const normalizedOldestWait = queueStats.oldest_wait_minutes;
       
       // Fetch wait-time recommendation first so it appears above demand predictions
@@ -938,7 +1283,15 @@
         headers: {
           'Content-Type': 'application/json'
         },
+<<<<<<< HEAD
         body: JSON.stringify({ current_request_count: currentHourRequests })
+=======
+        body: JSON.stringify({ 
+          current_request_count: currentHourRequests,
+          historical_count: historicalStats.historicalCount,
+          average_historical: historicalStats.averageHistorical
+        })
+>>>>>>> bff27a1 (update project)
       })
         .then((response) => response.json())
         .then((result) => {
@@ -948,13 +1301,26 @@
             const periodClass = result.period === 'very_busy' ? 'high' : result.period === 'busy' ? 'medium' : 'low';
             const busyIcon = result.period === 'very_busy' ? 'alert' : result.period === 'busy' ? 'clock' : 'check';
             busyCard.className = `recommendation-card ${periodClass}`;
+            
+            // Determine comparison message
+            let comparisonMsg = '';
+            if (historicalStats.averageHistorical > 0) {
+              if (currentHourRequests > historicalStats.averageHistorical * 1.2) {
+                comparisonMsg = ` (${Math.round((currentHourRequests / historicalStats.averageHistorical - 1) * 100)}% above average for this hour)`;
+              } else if (currentHourRequests < historicalStats.averageHistorical * 0.8) {
+                comparisonMsg = ` (${Math.round((1 - currentHourRequests / historicalStats.averageHistorical) * 100)}% below average for this hour)`;
+              } else {
+                comparisonMsg = ` (typical for this hour)`;
+              }
+            }
+            
             busyCard.innerHTML = `
               <div class="rec-icon" aria-hidden="true">${renderIcon('activity')}</div>
               <div class="rec-content">
                 <div class="rec-title">Current period</div>
                 <div class="rec-subtitle">${result.period.replace('_', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase())}</div>
                 <div class="rec-description">${result.description}</div>
-                <div class="rec-badge">${result.current_day} ${result.current_hour}:00</div>
+                <div class="rec-badge">${currentHourRequests} request${currentHourRequests !== 1 ? 's' : ''}${comparisonMsg} • ${result.current_day} ${result.current_hour}:00</div>
               </div>
             `;
             recommendationList.insertBefore(busyCard, recommendationList.firstChild);
@@ -964,14 +1330,21 @@
           console.log('busy period fetch failed:', e);
         });
 
+<<<<<<< HEAD
+=======
+      const tableIds = Object.keys(statsByTable).sort();
+      const mlPayload = serializeStatsForMl(statsByTable);
+
+>>>>>>> bff27a1 (update project)
       console.log('Fetching demand predictions from', BACKEND_URL + '/predict_demand');
       fetch(BACKEND_URL + '/predict_demand', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ stats_by_table: statsByTable })
+        body: JSON.stringify({ stats_by_table: mlPayload })
       })
+<<<<<<< HEAD
         .then((response) => response.json())
         .then((result) => {
           console.log('predict_demand result', result);
@@ -987,13 +1360,54 @@
               const tableName = normalizeTableName(tableId);
               recommendationList.appendChild(buildPatternCard(tableName, statsByTable[tableId]));
             });
+=======
+        .then(async (response) => {
+          const data = await response.json();
+          console.log('predict_demand result', data);
+          if (!data.success || !data.predictions) {
+            recommendationList.appendChild(buildMlUnavailableCard());
+            return;
+          }
+
+          const predictions = data.predictions || {};
+          const validPredictions = Object.fromEntries(
+            Object.entries(predictions).filter(([, value]) => Boolean(value))
+          );
+
+          if (Object.keys(validPredictions).length === 0) {
+            recommendationList.appendChild(buildMlUnavailableCard());
+            return;
+          }
+
+          recommendationList.appendChild(buildCustomerPatternCard(validPredictions));
+
+          const priorityEntries = Object.entries(statsByTable)
+            .filter(([tableId]) => tableId !== 'table_99')
+            .map(([tableId, tableStats]) => {
+              const prediction = validPredictions[tableId];
+              if (!prediction) {
+                return null;
+              }
+              const rank = prediction === 'recurring' ? 3 : prediction === 'occasional' ? 2 : 1;
+              return { tableId, tableStats, prediction, rank };
+            })
+            .filter(Boolean)
+            .sort((a, b) => (b.rank - a.rank) || (b.tableStats.totalRequests - a.tableStats.totalRequests));
+
+          const topEntry = priorityEntries[0];
+          if (topEntry) {
+            const tableName = normalizeTableName(topEntry.tableId);
+            const tableStats = {
+              ...topEntry.tableStats,
+              demandType: topEntry.prediction
+            };
+            recommendationList.appendChild(buildPriorityTableCard(tableName, tableStats, topEntry.prediction));
+>>>>>>> bff27a1 (update project)
           }
         })
-        .catch(() => {
-          Object.keys(statsByTable).sort().forEach((tableId) => {
-            const tableName = normalizeTableName(tableId);
-            recommendationList.appendChild(buildPatternCard(tableName, statsByTable[tableId]));
-          });
+        .catch((e) => {
+          console.log('predict_demand fetch failed:', e);
+          recommendationList.appendChild(buildMlUnavailableCard());
         });
     }
 

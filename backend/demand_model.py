@@ -11,6 +11,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeClassifier
 import joblib
 
 MODEL_PATH = Path(__file__).with_name('demand_model.joblib')
@@ -30,7 +31,7 @@ NUMERIC_COLUMNS = ['hour', 'total_requests', 'recent_24h', 'unique_days', 'peak_
 TARGET_LABELS = ['low', 'occasional', 'recurring']
 
 
-def build_pipeline() -> Pipeline:
+def build_pipeline(use_simple_model: bool = False) -> Pipeline:
     numeric_transformer = 'passthrough'
     categorical_transformer = OneHotEncoder(handle_unknown='ignore')
 
@@ -42,9 +43,11 @@ def build_pipeline() -> Pipeline:
         remainder='drop'
     )
 
+    classifier = DecisionTreeClassifier(max_depth=3, random_state=42) if use_simple_model else RandomForestClassifier(n_estimators=100, random_state=42)
+
     pipeline = Pipeline([
         ('preprocessor', preprocessor),
-        ('classifier', RandomForestClassifier(n_estimators=100, random_state=42))
+        ('classifier', classifier)
     ])
 
     return pipeline
@@ -70,12 +73,27 @@ def train_model(records: List[Dict[str, Any]], save: bool = True) -> Dict[str, A
     X = pd.DataFrame(data)[FEATURE_COLUMNS]
     y = pd.Series(labels)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-    pipeline = build_pipeline()
+    min_class_count = int(y.value_counts().min()) if not y.empty else 0
+    tiny_dataset = len(X) < 6 or min_class_count < 2
+    use_stratify = len(X) >= 4 and min_class_count >= 2
+    test_size = max(1, int(len(X) * 0.2))
+
+    if use_stratify:
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)
+    else:
+        if len(X) <= 3:
+            X_train, X_test, y_train, y_test = X.copy(), X.iloc[:0].copy(), y.copy(), y.iloc[:0].copy()
+        else:
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+
+    pipeline = build_pipeline(use_simple_model=tiny_dataset)
     pipeline.fit(X_train, y_train)
 
-    predictions = pipeline.predict(X_test)
-    accuracy = accuracy_score(y_test, predictions)
+    if len(X_test) == 0:
+        accuracy = 0.0
+    else:
+        predictions = pipeline.predict(X_test)
+        accuracy = accuracy_score(y_test, predictions)
 
     if save:
         joblib.dump(pipeline, MODEL_PATH)
