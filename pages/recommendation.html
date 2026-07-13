@@ -22,7 +22,6 @@
       --line-strong: #ccd5ce;
       --amber: #d98a12;
       --amber-bg: #fff3d8;
-      --blue: #3d6dd1;
       --green: #168a5b;
       --green-bg: #e5f6ee;
       --teal: #128678;
@@ -167,13 +166,8 @@
       height: 28px;
       flex: 0 0 auto;
       place-items: center;
-<<<<<<< HEAD
-      border-radius: 6px;
-      background: rgba(247, 182, 75, 0.16);
-=======
       border-radius: 8px;
       background: rgba(255, 255, 255, 0.1);
->>>>>>> bff27a1 (update project)
       color: #f7b64b;
       font-size: 0.82rem;
       font-weight: 800;
@@ -204,16 +198,6 @@
     .nav-item .nav-badge.visible {
       opacity: 1;
       transform: scale(1);
-    }
-
-    .nav-symbol svg {
-      width: 14px;
-      height: 14px;
-      stroke: currentColor;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      fill: none;
     }
 
     .connection-card {
@@ -409,14 +393,6 @@
       background: linear-gradient(180deg, #e8f2ff 0%, #ffffff 100%);
     }
 
-<<<<<<< HEAD
-    .recommendation-card .rec-icon {
-      background: rgba(23, 35, 31, 0.06);
-      color: var(--ink);
-    }
-
-=======
->>>>>>> bff27a1 (update project)
     .rec-icon {
       display: grid;
       width: 60px;
@@ -427,42 +403,20 @@
       font-weight: 700;
     }
 
-<<<<<<< HEAD
-    .rec-icon svg {
-      width: 24px;
-      height: 24px;
-      stroke: currentColor;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      fill: none;
-    }
-
-    .recommendation-card.high .rec-icon,
-    .recommendation-card.recurring .rec-icon {
-      background: rgba(194, 65, 59, 0.12);
-=======
     .recommendation-card.high .rec-icon,
     .recommendation-card.recurring .rec-icon {
       background: var(--red-bg);
->>>>>>> bff27a1 (update project)
       color: var(--red);
     }
 
     .recommendation-card.medium .rec-icon,
-<<<<<<< HEAD
-    .recommendation-card.occasional .rec-icon,
-    .recommendation-card.wait-time .rec-icon {
-      background: rgba(217, 138, 18, 0.16);
-=======
     .recommendation-card.occasional .rec-icon {
       background: var(--amber-bg);
->>>>>>> bff27a1 (update project)
       color: var(--amber);
     }
 
     .recommendation-card.low .rec-icon {
-      background: rgba(22, 138, 91, 0.14);
+      background: var(--green-bg);
       color: var(--green);
     }
 
@@ -613,19 +567,11 @@
             </div>
           </div>
           <nav class="nav-list" aria-label="Dashboard sections">
-<<<<<<< HEAD
-            <a href="dashboard.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect></svg></span><span>Dashboard</span></a>
-            <a href="analytics.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V10"></path><path d="M12 19V5"></path><path d="M20 19V13"></path><path d="M4 15h16"></path></svg></span><span>Analytics</span></a>
-            <a href="history.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg></span><span>History</span></a>
-            <a href="alerts.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0"></path><path d="M6 8a4 4 0 0 1 12 0"></path><path d="M5 15h14"></path><path d="M8 15v2a4 4 0 0 0 8 0v-2"></path></svg></span><span>Alerts</span></a>
-            <a href="recommendation.html" class="nav-item active"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M19 15l.5 1.5L21 17l-1.5.5L19 19l-.5-1.5L17 17l1.5-.5L19 15z"></path></svg></span><span>Recommendations</span></a>
-=======
             <a href="dashboard.html" class="nav-item" aria-label="Open dashboard"><span class="nav-symbol">⌂</span><span>Dashboard</span></a>
             <a href="analytics.html" class="nav-item" aria-label="Open analytics"><span class="nav-symbol">◔</span><span>Analytics</span></a>
             <a href="history.html" class="nav-item" aria-label="Open history"><span class="nav-symbol">⏱</span><span>History</span></a>
             <a href="alerts.html" class="nav-item" aria-label="Open alerts"><span class="nav-symbol">🔔</span><span>Alerts</span><span id="alertsNavBadge" class="nav-badge">0</span></a>
             <a href="recommendation.html" class="nav-item active" aria-label="Open recommendations"><span class="nav-symbol">✦</span><span>Recommendations</span></a>
->>>>>>> bff27a1 (update project)
           </nav>
         </div>
       </div>
@@ -655,27 +601,17 @@
 
       <div class="recommendation-list" id="recommendationList">
         <article class="recommendation-card medium" id="placeholderCard">
-          <div class="rec-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M19 15l.5 1.5L21 17l-1.5.5L19 19l-.5-1.5L17 17l1.5-.5L19 15z"></path></svg></div>
+          <div class="rec-icon">🧠</div>
           <div class="rec-content">
-<<<<<<< HEAD
-            <div class="rec-title">Recommendations loading</div>
-            <div class="rec-description">Live recommendations will appear here as soon as the data feed is available.</div>
-            <div class="rec-badge">Stand by</div>
-=======
             <div class="rec-title">Smart suggestions are almost ready</div>
             <div class="rec-description">This section will soon show helpful predictions and service tips based on your recent table activity and customer patterns.</div>
             <div class="rec-badge">🟡 Coming soon</div>
->>>>>>> bff27a1 (update project)
           </div>
         </article>
       </div>
     </main>
   </div>
 
-<<<<<<< HEAD
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-=======
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script src="../scripts/alert-badge.js"></script>
@@ -697,37 +633,21 @@
     const recommendationList = document.getElementById("recommendationList");
 
     // Backend base URL — override with window.BACKEND_URL if needed
-    const BACKEND_URL = window.BACKEND_URL || 'https://realtime-service-delivery-api.onrender.com';
-
-    const TABLE_LABELS = {
-      table_1: "Table 1",
-      table_2: "Table 2",
-      table_3: "Table 3",
-      table_4: "Table 4",
-      table_5: "Table 5"
-    };
+    const BACKEND_URL = window.BACKEND_URL || 'http://127.0.0.1:5001';
 
     const DEMAND_LABELS = {
       recurring: {
         title: "High priority",
-        icon: "alert",
+        icon: "🔥",
         badge: "Quick attention"
       },
       occasional: {
         title: "Medium priority",
-<<<<<<< HEAD
-        icon: "trend",
-=======
         icon: "⚡",
->>>>>>> bff27a1 (update project)
         badge: "Monitor closely"
       },
       low: {
         title: "Low priority",
-<<<<<<< HEAD
-        icon: "check",
-        badge: "No rush"
-=======
         icon: "🌿",
         badge: "No rush"
       }
@@ -748,40 +668,8 @@
         title: "Low wait time",
         icon: "🟢",
         badge: "On track"
->>>>>>> bff27a1 (update project)
       }
     };
-
-    const WAIT_TIME_LABELS = {
-      high: {
-        title: "High wait time",
-        icon: "alert",
-        badge: "Immediate attention"
-      },
-      medium: {
-        title: "Moderate wait time",
-        icon: "clock",
-        badge: "Monitor closely"
-      },
-      low: {
-        title: "Low wait time",
-        icon: "check",
-        badge: "On track"
-      }
-    };
-
-    function renderIcon(name) {
-      const icons = {
-        sparkle: '<svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path></svg>',
-        trend: '<svg viewBox="0 0 24 24"><path d="M4 19h16"></path><path d="M7 14l3-3 2 2 5-6"></path><path d="M16 7h3v3"></path></svg>',
-        check: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M9 12l2 2 4-4"></path></svg>',
-        alert: '<svg viewBox="0 0 24 24"><path d="M12 3l8 16H4z"></path><path d="M12 8v5"></path><path d="M12 15h.01"></path></svg>',
-        clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg>',
-        bell: '<svg viewBox="0 0 24 24"><path d="M15 17H5a2 2 0 0 1-2-2V13a4 4 0 0 1 4-4V6a3 3 0 1 1 6 0v3a4 4 0 0 1 4 4v2a2 2 0 0 1-2 2"></path><path d="M10 17a2 2 0 0 0 4 0"></path></svg>',
-        activity: '<svg viewBox="0 0 24 24"><path d="M3 12h3l2-4 3 8 2-4h8"></path></svg>'
-      };
-      return icons[name] || icons.sparkle;
-    }
 
     function updateLastSync() {
       lastSync.textContent = "Last sync: " + new Date().toLocaleTimeString(undefined, {
@@ -897,85 +785,13 @@
       };
     }
 
-    function parseEventTimestamp(event) {
-      const ts = event.timestamp || event.iso_time || event.time || event.created_at;
-      const date = ts ? new Date(ts) : new Date(NaN);
-      return Number.isNaN(date.getTime()) ? null : date;
-    }
-
-    function computePendingQueueStats(events) {
-      const now = new Date();
-      const pendingByTable = {};
-
-      const sortedEvents = events
-        .map((event) => ({ event, timestamp: parseEventTimestamp(event) }))
-        .filter((item) => item.timestamp)
-        .sort((a, b) => a.timestamp - b.timestamp);
-
-      sortedEvents.forEach(({ event, timestamp }) => {
-        const type = (event.event_type || event.eventType || '').toLowerCase();
-        const tableId = event.table_id || event.tableId;
-        if (!tableId || !type) return;
-
-        if (type === 'requested') {
-          const queue = pendingByTable[tableId] || [];
-          queue.push(timestamp);
-          pendingByTable[tableId] = queue;
-        } else if (type === 'served') {
-          pendingByTable[tableId] = [];
-        }
-      });
-
-      let pendingRequests = 0;
-      let oldestWaitMinutes = Infinity;
-      Object.values(pendingByTable).forEach((queue) => {
-        pendingRequests += queue.length;
-        queue.forEach((timestamp) => {
-          const ageMinutes = (now - timestamp) / 60000;
-          oldestWaitMinutes = Math.min(oldestWaitMinutes, ageMinutes);
-        });
-      });
-
-      return {
-        pendingRequests,
-        oldest_wait_minutes: Number.isFinite(oldestWaitMinutes) ? oldestWaitMinutes : 0
-      };
-    }
-
-    function countCurrentHourRequests(events) {
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentDay = now.toLocaleDateString(undefined, { weekday: 'long' });
-      const currentDateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
-      return events.reduce((count, event) => {
-        const timestamp = parseEventTimestamp(event);
-        if (!timestamp) return count;
-
-        const eventHour = timestamp.getHours();
-        const eventDay = timestamp.toLocaleDateString(undefined, { weekday: 'long' });
-        const eventDateKey = `${timestamp.getFullYear()}-${String(timestamp.getMonth() + 1).padStart(2, '0')}-${String(timestamp.getDate()).padStart(2, '0')}`;
-        const isRequested = (event.event_type || event.eventType || '').toLowerCase() === 'requested';
-
-        return count + ((eventHour === currentHour && eventDay === currentDay && eventDateKey === currentDateKey && isRequested) ? 1 : 0);
-      }, 0);
-    }
-
     function classifyTableDemand(stats) {
-<<<<<<< HEAD
-      if (stats.totalRequests >= 20 || stats.days.size >= 5 || stats.recentHoursPeak >= 5) {
-        return "recurring";
-      }
-      if (stats.totalRequests >= 10 || stats.days.size >= 3 || stats.recent24 >= 4) {
-        return "occasional";
-=======
       // Updated thresholds: 20=high, 10=medium, 5=low
       if (stats.totalRequests >= 20) {
         return "recurring";  // High demand
       }
       if (stats.totalRequests >= 10) {
         return "occasional";  // Medium demand
->>>>>>> bff27a1 (update project)
       }
       if (stats.totalRequests >= 5) {
         return "low";  // Low demand but notable
@@ -984,25 +800,7 @@
     }
 
     function describePattern(stats, tableName) {
-      const demandType = stats.demandType || "low";
-      const peakDay = stats.topDay || "the week";
-      const hour = Number(stats.topHour) || 0;
       const lines = [];
-<<<<<<< HEAD
-
-      if (demandType === "recurring") {
-        if (11 <= hour && hour < 15) {
-          lines.push(`${tableName} is busy on ${peakDay} around lunch and may need extra attention.`);
-        } else if (17 <= hour && hour < 21) {
-          lines.push(`${tableName} is busy on ${peakDay} around the evening rush and may need a quick check-in.`);
-        } else {
-          lines.push(`${tableName} shows repeated demand on ${peakDay} and may benefit from proactive support.`);
-        }
-      } else if (demandType === "occasional") {
-        lines.push(`${tableName} has moderate demand and is worth monitoring on ${peakDay} during busy periods.`);
-      } else {
-        lines.push(`${tableName} is quiet right now and usually stays calm after service.`);
-=======
       const requestCount = stats.totalRequests || 0;
 
       if (requestCount === 0) {
@@ -1038,7 +836,6 @@
         lines.push(`Best time to prepare is ${stats.topDay}.`);
       } else if (stats.topDay) {
         lines.push(`Most activity appears on ${stats.topDay}.`);
->>>>>>> bff27a1 (update project)
       }
 
       return lines.join(" ");
@@ -1049,7 +846,7 @@
       const card = document.createElement("article");
       card.className = `recommendation-card ${stats.demandType}`;
       card.innerHTML = `
-        <div class="rec-icon" aria-hidden="true">${renderIcon(model.icon)}</div>
+        <div class="rec-icon">${model.icon}</div>
         <div class="rec-content">
           <div class="rec-title">${tableName} — ${model.title}</div>
           <div class="rec-description">${describePattern(stats, tableName)}</div>
@@ -1059,8 +856,6 @@
       return card;
     }
 
-<<<<<<< HEAD
-=======
     function buildMlUnavailableCard() {
       const card = document.createElement("article");
       card.className = "recommendation-card low";
@@ -1142,17 +937,12 @@
       return serialized;
     }
 
->>>>>>> bff27a1 (update project)
     function buildWaitTimeCard(waitInfo) {
       const label = WAIT_TIME_LABELS[waitInfo.level] || WAIT_TIME_LABELS.low;
       const card = document.createElement("article");
       card.className = `recommendation-card wait-time ${waitInfo.level}`;
       card.innerHTML = `
-<<<<<<< HEAD
-        <div class="rec-icon" aria-hidden="true">${renderIcon(label.icon)}</div>
-=======
         <div class="rec-icon">${label.icon}</div>
->>>>>>> bff27a1 (update project)
         <div class="rec-content">
           <div class="rec-title">Wait-Time Advisory — ${label.title}</div>
           <div class="rec-description">${waitInfo.message}</div>
@@ -1224,7 +1014,7 @@
       if (Object.keys(statsByTable).length === 0) {
         recommendationList.innerHTML = `
           <article class="recommendation-card low">
-            <div class="rec-icon" aria-hidden="true">${renderIcon("bell")}</div>
+            <div class="rec-icon">🟡</div>
             <div class="rec-content">
               <div class="rec-title">Waiting for demand data</div>
               <div class="rec-description">No requested events were found in Firebase yet. Table demand profiles will appear once the system receives requests.</div>
@@ -1239,10 +1029,7 @@
       const queueStats = computePendingQueueStats(events);
       const currentRequests = queueStats.pendingRequests;
       const currentHourRequests = countCurrentHourRequests(events);
-<<<<<<< HEAD
-=======
       const historicalStats = getHistoricalHourStats(events);
->>>>>>> bff27a1 (update project)
       const normalizedOldestWait = queueStats.oldest_wait_minutes;
       
       // Fetch wait-time recommendation first so it appears above demand predictions
@@ -1275,15 +1062,11 @@
         headers: {
           'Content-Type': 'application/json'
         },
-<<<<<<< HEAD
-        body: JSON.stringify({ current_request_count: currentHourRequests })
-=======
         body: JSON.stringify({ 
           current_request_count: currentHourRequests,
           historical_count: historicalStats.historicalCount,
           average_historical: historicalStats.averageHistorical
         })
->>>>>>> bff27a1 (update project)
       })
         .then((response) => response.json())
         .then((result) => {
@@ -1291,7 +1074,6 @@
           if (result.success) {
             const busyCard = document.createElement("article");
             const periodClass = result.period === 'very_busy' ? 'high' : result.period === 'busy' ? 'medium' : 'low';
-            const busyIcon = result.period === 'very_busy' ? 'alert' : result.period === 'busy' ? 'clock' : 'check';
             busyCard.className = `recommendation-card ${periodClass}`;
             
             // Determine comparison message
@@ -1307,7 +1089,7 @@
             }
             
             busyCard.innerHTML = `
-              <div class="rec-icon" aria-hidden="true">${renderIcon('activity')}</div>
+              <div class="rec-icon">${result.period === 'very_busy' ? '🔴' : result.period === 'busy' ? '🟡' : '🟢'}</div>
               <div class="rec-content">
                 <div class="rec-title">Current period</div>
                 <div class="rec-subtitle">${result.period.replace('_', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase())}</div>
@@ -1322,12 +1104,9 @@
           console.log('busy period fetch failed:', e);
         });
 
-<<<<<<< HEAD
-=======
       const tableIds = Object.keys(statsByTable).sort();
       const mlPayload = serializeStatsForMl(statsByTable);
 
->>>>>>> bff27a1 (update project)
       console.log('Fetching demand predictions from', BACKEND_URL + '/predict_demand');
       fetch(BACKEND_URL + '/predict_demand', {
         method: 'POST',
@@ -1336,23 +1115,6 @@
         },
         body: JSON.stringify({ stats_by_table: mlPayload })
       })
-<<<<<<< HEAD
-        .then((response) => response.json())
-        .then((result) => {
-          console.log('predict_demand result', result);
-          if (result.success && result.predictions) {
-            Object.keys(statsByTable).sort().forEach((tableId) => {
-              const tableName = normalizeTableName(tableId);
-              const demandType = result.predictions[tableId] || statsByTable[tableId].demandType;
-              statsByTable[tableId].demandType = demandType;
-              recommendationList.appendChild(buildPatternCard(tableName, statsByTable[tableId]));
-            });
-          } else {
-            Object.keys(statsByTable).sort().forEach((tableId) => {
-              const tableName = normalizeTableName(tableId);
-              recommendationList.appendChild(buildPatternCard(tableName, statsByTable[tableId]));
-            });
-=======
         .then(async (response) => {
           const data = await response.json();
           console.log('predict_demand result', data);
@@ -1394,7 +1156,6 @@
               demandType: topEntry.prediction
             };
             recommendationList.appendChild(buildPriorityTableCard(tableName, tableStats, topEntry.prediction));
->>>>>>> bff27a1 (update project)
           }
         })
         .catch((e) => {
@@ -1469,7 +1230,7 @@
           showBusyPeriodCard();
           recommendationList.innerHTML += `
             <article class="recommendation-card low">
-              <div class="rec-icon" aria-hidden="true">${renderIcon("alert")}</div>
+              <div class="rec-icon">⚠️</div>
               <div class="rec-content">
                 <div class="rec-title">Firebase connection unavailable</div>
                 <div class="rec-description">Showing busy period prediction only. ${error.message}</div>
@@ -1496,14 +1257,12 @@
           if (result.success) {
             const busyCard = document.createElement("article");
             const periodClass = result.period === 'very_busy' ? 'high' : result.period === 'busy' ? 'medium' : 'low';
-            const busyIcon = result.period === 'very_busy' ? 'alert' : result.period === 'busy' ? 'clock' : 'check';
             busyCard.className = `recommendation-card ${periodClass}`;
             busyCard.innerHTML = `
-              <div class="rec-icon" aria-hidden="true">${renderIcon('activity')}</div>
+              <div class="rec-icon">${result.period === 'very_busy' ? '🔴' : result.period === 'busy' ? '🟡' : '🟢'}</div>
               <div class="rec-content">
                 <div class="rec-title">Current period: ${result.period}</div>
                 <div class="rec-description">${result.description}</div>
-                <div class="rec-caption">Overview: this compares live requests with the usual demand for this hour and weekday so you can spot unusually high service pressure.</div>
                 <div class="rec-badge">${result.current_day} ${result.current_hour}:00</div>
               </div>
             `;
@@ -1516,7 +1275,7 @@
           const busyCard = document.createElement("article");
           busyCard.className = `recommendation-card low`;
           busyCard.innerHTML = `
-            <div class="rec-icon" aria-hidden="true">${renderIcon("alert")}</div>
+            <div class="rec-icon">⚪</div>
             <div class="rec-content">
               <div class="rec-title">Busy period unavailable</div>
               <div class="rec-description">Unable to determine current busy period — the prediction service is unreachable.</div>
@@ -1529,8 +1288,8 @@
 
     retrainButton.addEventListener("click", retrainModel);
 
-    setConnection("connected", "Ready");
-    window.setTimeout(loadTableDemandPatterns, 120);
+    setConnection("reconnecting", "Connecting to Firebase...");
+    loadTableDemandPatterns();
   </script>
 </body>
 </html>
