@@ -102,6 +102,17 @@ def send_telegram_message(message):
         return False
 
 
+<<<<<<< HEAD
+def dispatch_background_notification(message):
+    """Send Telegram notifications asynchronously so the API responds faster."""
+    try:
+        thread = Thread(target=send_telegram_message, args=(message,), daemon=True)
+        thread.start()
+        return True
+    except Exception as e:
+        print(f"Notification dispatch error: {e}")
+        return False
+=======
 def is_cleanup_enabled():
     """Return whether request cleanup is explicitly enabled."""
     value = os.getenv("ENABLE_REQUEST_CLEANUP", "").strip().lower()
@@ -135,17 +146,6 @@ def save_auto_retrain_state(last_trained_total: int) -> None:
 def get_last_trained_total() -> int:
     """Return the last request count used for a successful retraining."""
     return int(load_auto_retrain_state().get('last_trained_total', 0))
-
-
-def dispatch_background_notification(message):
-    """Send Telegram notifications asynchronously so the API responds faster."""
-    try:
-        thread = Thread(target=send_telegram_message, args=(message,), daemon=True)
-        thread.start()
-        return True
-    except Exception as e:
-        print(f"Notification dispatch error: {e}")
-        return False
 
 
 def maybe_auto_retrain(total_requests: int, last_trained_total: int, threshold: int = 100):
@@ -210,6 +210,7 @@ def maybe_auto_retrain(total_requests: int, last_trained_total: int, threshold: 
     except Exception as e:
         print('auto-retrain error', e)
         return {'triggered': False, 'reason': str(e)}
+>>>>>>> bff27a1 (update project)
 
 
 def cleanup_old_requests(max_age_minutes=10):
@@ -402,8 +403,21 @@ def train_demand_model():
 
 
 def _classify_table_demand(stats):
+<<<<<<< HEAD
     """Use the same table-level heuristic as the recommendation UI."""
     return classify_demand_from_stats(stats)
+=======
+    # Updated thresholds: 20=high, 10=medium, 5=low
+    total = stats.get('totalRequests', 0)
+    
+    if total >= 20:
+        return 'recurring'  # High demand
+    if total >= 10:
+        return 'occasional'  # Medium demand
+    if total >= 5:
+        return 'low'  # Low demand but notable
+    return 'low'  # Very low/minimal demand
+>>>>>>> bff27a1 (update project)
 
 
 @app.route('/bootstrap_train', methods=['POST', 'GET'])
@@ -572,7 +586,11 @@ def get_busy_period():
 
 
 def classify_wait_time(pending_requests: int, oldest_wait_minutes: float) -> str:
+<<<<<<< HEAD
     """Classify the current service pace in a simple, friendly way."""
+=======
+    """Classify a wait-time level using a queue-based rule."""
+>>>>>>> bff27a1 (update project)
     if pending_requests <= 0:
         return 'low'
     if pending_requests >= 6 or oldest_wait_minutes >= 15:
@@ -598,6 +616,7 @@ def format_wait_estimate(pending_requests: int, oldest_wait_minutes: float) -> s
 
 
 def describe_wait_time(level: str, pending_requests: int, oldest_wait_minutes: float) -> dict:
+<<<<<<< HEAD
     """Generate a simple, friendly service update payload."""
     if pending_requests <= 0:
         return {
@@ -630,6 +649,39 @@ def describe_wait_time(level: str, pending_requests: int, oldest_wait_minutes: f
         'message': f'Some tables are waiting, but the oldest request has only been waiting about {oldest_text}. Service is still moving well.',
         'estimate': estimated_wait,
         'badge': 'Smooth service'
+=======
+    """Generate a professional wait-time recommendation payload."""
+    if pending_requests <= 0:
+        return {
+            'title': 'Low wait time',
+            'message': 'There are no active pending requests. Current service levels are clear.',
+            'estimate': 'Under 3 minutes',
+            'badge': 'On track'
+        }
+
+    estimated_wait = format_wait_estimate(pending_requests, oldest_wait_minutes)
+    status_line = f'{pending_requests} active pending request{"s" if pending_requests != 1 else ""}, oldest pending request {int(oldest_wait_minutes)} minute{"s" if int(oldest_wait_minutes) != 1 else ""}.'
+
+    if level == 'high':
+        return {
+            'title': 'High wait advisory',
+            'message': f'{status_line} Guests may be waiting longer than usual, so service support should be prioritized now.',
+            'estimate': estimated_wait,
+            'badge': 'Act now'
+        }
+    if level == 'medium':
+        return {
+            'title': 'Moderate wait advisory',
+            'message': f'{status_line} Service demand is building, and staff should keep an eye on the queue.',
+            'estimate': estimated_wait,
+            'badge': 'Stay alert'
+        }
+    return {
+        'title': 'Low wait advisory',
+        'message': f'{status_line} Service is flowing normally and the queue remains manageable.',
+        'estimate': estimated_wait,
+        'badge': 'On track'
+>>>>>>> bff27a1 (update project)
     }
 
 
