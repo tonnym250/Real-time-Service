@@ -86,22 +86,13 @@ def predict_busy_period(
         # No historical data, default to normal
         return 'normal'
 
-<<<<<<< HEAD
-=======
     # Simple thresholds with optional environment overrides
->>>>>>> bff27a1 (update project)
     ratio = current_table_requests / average
     thresholds = _get_ratio_thresholds()
 
-<<<<<<< HEAD
-    if current_table_requests >= 4 and ratio >= 1.8:
-        return 'very_busy'
-    elif current_table_requests >= 2 and ratio >= 1.3:
-=======
     if ratio >= thresholds['very_busy']:
         return 'very_busy'
     elif ratio >= thresholds['busy']:
->>>>>>> bff27a1 (update project)
         return 'busy'
     else:
         return 'normal'

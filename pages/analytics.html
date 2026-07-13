@@ -166,13 +166,8 @@
       height: 28px;
       flex: 0 0 auto;
       place-items: center;
-<<<<<<< HEAD
       border-radius: 6px;
       background: rgba(247, 182, 75, 0.16);
-=======
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
->>>>>>> bff27a1 (update project)
       color: #f7b64b;
       font-size: 0.82rem;
       font-weight: 800;
@@ -555,19 +550,11 @@
             </div>
           </div>
           <nav class="nav-list" aria-label="Dashboard sections">
-<<<<<<< HEAD
             <a href="dashboard.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect></svg></span><span>Dashboard</span></a>
             <a href="analytics.html" class="nav-item active"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V10"></path><path d="M12 19V5"></path><path d="M20 19V13"></path><path d="M4 15h16"></path></svg></span><span>Analytics</span></a>
             <a href="history.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg></span><span>History</span></a>
             <a href="alerts.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5a2 2 0 1 1 4 0"></path><path d="M6 8a4 4 0 0 1 12 0"></path><path d="M5 15h14"></path><path d="M8 15v2a4 4 0 0 0 8 0v-2"></path></svg></span><span>Alerts</span></a>
             <a href="recommendation.html" class="nav-item"><span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"></path><path d="M19 15l.5 1.5L21 17l-1.5.5L19 19l-.5-1.5L17 17l1.5-.5L19 15z"></path></svg></span><span>Recommendations</span></a>
-=======
-            <a href="dashboard.html" class="nav-item" aria-label="Open dashboard"><span class="nav-symbol">⌂</span><span>Dashboard</span></a>
-            <a href="analytics.html" class="nav-item active" aria-label="Open analytics"><span class="nav-symbol">◔</span><span>Analytics</span></a>
-            <a href="history.html" class="nav-item" aria-label="Open history"><span class="nav-symbol">⏱</span><span>History</span></a>
-            <a href="alerts.html" class="nav-item" aria-label="Open alerts"><span class="nav-symbol">🔔</span><span>Alerts</span><span id="alertsNavBadge" class="nav-badge">0</span></a>
-            <a href="recommendation.html" class="nav-item" aria-label="Open recommendations"><span class="nav-symbol">✦</span><span>Recommendations</span></a>
->>>>>>> bff27a1 (update project)
           </nav>
         </div>
       </div>
@@ -610,13 +597,9 @@
 
         <div class="stat-card">
           <div class="stat-label">Busiest table today</div>
-<<<<<<< HEAD
           <div id="completionRate" class="stat-value">—</div>
           <div id="completionNote" class="stat-change">Most requested table today</div>
-=======
-          <div id="busiestTable" class="stat-value">—</div>
-          <div id="busiestTableCount" class="stat-change">— requests</div>
->>>>>>> bff27a1 (update project)
+bff27a1 (update project)
         </div>
 
         <div class="stat-card">
@@ -644,14 +627,8 @@
     </main>
   </div>
 
-<<<<<<< HEAD
   <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-=======
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-  <script src="../scripts/alert-badge.js"></script>
->>>>>>> bff27a1 (update project)
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDGEmefDNithsiaIjsTMSJC4C7E7u_ad_0",
@@ -784,35 +761,20 @@
       const requestCounts = requestedEvents.length;
       const servedCounts = servedEvents.length;
 
-<<<<<<< HEAD
       const tableCounts = {};
       requestedEvents.forEach((event) => {
         const tableId = event.tableId || "unknown";
-=======
-      // Find busiest table
-      const tableCounts = {};
-      requestedEvents.forEach((event) => {
-        const tableId = event.tableId;
->>>>>>> bff27a1 (update project)
+bff27a1 (update project)
         tableCounts[tableId] = (tableCounts[tableId] || 0) + 1;
       });
 
       let busiestTableLabel = "—";
-<<<<<<< HEAD
       let busiestTableCount = 0;
       if (Object.keys(tableCounts).length) {
         const busiestEntry = Object.entries(tableCounts).reduce((best, current) => (current[1] > best[1] ? current : best), ["unknown", 0]);
         busiestTableLabel = formatTableLabel(busiestEntry[0]);
         busiestTableCount = busiestEntry[1];
-=======
-      let busiestTableRequestCount = 0;
-      if (Object.keys(tableCounts).length) {
-        const [tableId, count] = Object.entries(tableCounts).reduce((best, current) => (current[1] > best[1] ? current : best), [0, 0]);
-        // Extract just the numeric part (e.g., "table_2" -> "2", "2" -> "2")
-        const tableNum = tableId.toString().replace(/^\D+/, '');
-        busiestTableLabel = `Table ${tableNum}`;
-        busiestTableRequestCount = count;
->>>>>>> bff27a1 (update project)
+bff27a1 (update project)
       }
 
       const hourlyCounts = {};
@@ -842,11 +804,8 @@
 
       const avgResponse = responseTimes.length ? responseTimes.reduce((sum, value) => sum + value, 0) / responseTimes.length : null;
 
-<<<<<<< HEAD
       return { requestCounts, servedCounts, busiestTableLabel, busiestTableCount, peakHourLabel, avgResponse, hourlyCounts };
-=======
-      return { requestCounts, servedCounts, busiestTableLabel, busiestTableRequestCount, peakHourLabel, avgResponse, hourlyCounts };
->>>>>>> bff27a1 (update project)
+bff27a1 (update project)
     }
 
     function updateUI(metrics) {
@@ -854,15 +813,11 @@
       if (avgResponseNote) avgResponseNote.textContent = metrics.avgResponse ? `${metrics.avgResponse.toFixed(1)} minutes average` : "Not enough served events yet";
       if (requestsToday) requestsToday.textContent = String(metrics.requestCounts);
       if (requestChange) requestChange.textContent = "Live from Firebase";
-<<<<<<< HEAD
       if (completionRate) completionRate.textContent = metrics.busiestTableLabel !== "—" ? metrics.busiestTableLabel : "—";
       if (completionNote) completionNote.textContent = metrics.busiestTableLabel !== "—"
         ? `${metrics.busiestTableCount} request${metrics.busiestTableCount === 1 ? "" : "s"} today`
         : "No requests recorded today";
-=======
-      if (busiestTable) busiestTable.textContent = metrics.busiestTableLabel;
-      if (busiestTableCount) busiestTableCount.textContent = `${metrics.busiestTableRequestCount} requests`;
->>>>>>> bff27a1 (update project)
+bff27a1 (update project)
       if (peakHour) peakHour.textContent = metrics.peakHourLabel;
       if (peakHourNote) peakHourNote.textContent = metrics.peakHourLabel !== "—" ? "Most active hour" : "No request hour data";
       buildChart(metrics.hourlyCounts);
