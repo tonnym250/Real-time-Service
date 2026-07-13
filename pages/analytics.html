@@ -824,7 +824,9 @@
 
     function loadAnalytics() {
       try {
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
         const db = firebase.database();
         db.ref("requests").on("value", (snapshot) => {
           const data = snapshot.val();

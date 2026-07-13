@@ -40,28 +40,16 @@ Table tables[NUM_TABLES] = {
 };
 
 // ---------- Timing ----------
-<<<<<<< HEAD
-const unsigned long DEBOUNCE_MS           = 250;      // ignore repeat presses within this window
-const unsigned long DISPLAY_DURATION       = 10000;    // how long a message stays before default screen
-const unsigned long WINDOW_DURATION        = 120000;   // 2 minutes
-const int           MAX_REQUESTS           = 10;
-const int           HTTP_TIMEOUT_MS        = 2000;     // faster request timeout to avoid long waits
-const unsigned long NTP_UPDATE_INTERVAL_MS = 60000;    // only refresh time once per minute
-
-unsigned long displayTimeout = 0;  // one shared timer for returning to the default screen
-unsigned long lastNtpUpdate = 0;
-=======
-const unsigned long DEBOUNCE_MS      = 250;      // ignore repeat presses within this window
+const unsigned long DEBOUNCE_MS = 250;            // ignore repeat presses within this window
 const unsigned long DISPLAY_DURATION = 10000;    // how long a message stays before default screen
-const unsigned long WINDOW_DURATION  = 120000;   // 2 minutes
-const int           MAX_REQUESTS     = 10;
-const int           HTTP_TIMEOUT_MS  = 10000;    // 10s timeout for slower requests
+const unsigned long WINDOW_DURATION = 120000;    // 2 minutes
+const int MAX_REQUESTS = 10;
+const int HTTP_TIMEOUT_MS = 2000;                // faster request timeout to avoid long waits
 const unsigned long NTP_UPDATE_INTERVAL = 30000; // update NTP time only every 30 seconds
 
 unsigned long displayTimeout = 0;  // one shared timer for returning to the default screen
 unsigned long lastNTPUpdate = 0;   // track last NTP update time
 unsigned long lastDisplayTime = 0; // cache the last displayed default screen
->>>>>>> bff27a1 (update project)
 
 // ---------- NTP ----------
 WiFiUDP   ntpUDP;
@@ -106,10 +94,6 @@ bool callAPIServer(String tableId, String eventType) {
   http.begin(client, url);
   http.addHeader("Content-Type", "application/json");
   http.setTimeout(HTTP_TIMEOUT_MS);
-<<<<<<< HEAD
-  http.setConnectTimeout(HTTP_TIMEOUT_MS);
-=======
->>>>>>> bff27a1 (update project)
 
   String payload = "{\"table_id\":\"" + tableId + "\",\"event_type\":\"" + eventType + "\"}";
   Serial.println("Calling API: " + payload);
@@ -149,11 +133,7 @@ void showDefaultScreen() {
   lcd.setCursor(0, 0);
   lcd.print("PRESS BUTTONS:");
   lcd.setCursor(0, 1);
-<<<<<<< HEAD
-  lcd.print("T1:Y T2:G T3:R");
-=======
   lcd.print("T1:W T2:W T3:W");
->>>>>>> bff27a1 (update project)
 }
 
 void showMessage(const String& line1, const String& line2) {
@@ -192,21 +172,11 @@ void handleTable(int i, unsigned long epoch, const String& currentTime) {
       }
       if (t.requestCount < MAX_REQUESTS) {
         t.requestCount++;
-<<<<<<< HEAD
-        showMessage("T" + String(n) + " REQUEST SENT", "SENDING...");
-=======
->>>>>>> bff27a1 (update project)
         logEvent(t.id, "requested", epoch);
       }
       t.requestActive = true;
     }
-<<<<<<< HEAD
-    if (!t.requestActive) {
-      showMessage("T" + String(n) + " REQUEST SENT", "TELEGRAM SENT!");
-    }
-=======
     showMessage("T" + String(n) + " REQUEST SENT", "TELEGRAM SENT!");
->>>>>>> bff27a1 (update project)
   }
 
   // ----- Waiter confirm (falling edge + debounce) -----
@@ -218,10 +188,6 @@ void handleTable(int i, unsigned long epoch, const String& currentTime) {
       Serial.println("Table " + String(n) + " Confirm: Invalid NTP time");
     } else {
       Serial.println("Table " + String(n) + " Confirm at: " + currentTime);
-<<<<<<< HEAD
-      showMessage("T" + String(n) + " THANK YOU", "SENDING...");
-=======
->>>>>>> bff27a1 (update project)
       logEvent(t.id, "served", epoch);
       t.requestCount  = 0;
       t.requestActive = false;
@@ -260,13 +226,6 @@ void setup() {
   WiFi.begin(ssid, password);
   int wifiAttempts = 0;
   while (WiFi.status() != WL_CONNECTED && wifiAttempts < 20) {
-<<<<<<< HEAD
-    delay(500);
-    lcd.setCursor(0, 0);
-    lcd.print("CONNECT TO WiFi");
-    lcd.setCursor(wifiAttempts % 16, 1);
-    lcd.print(".");
-=======
     delay(250);
     if (wifiAttempts % 2 == 0) {  // Update LCD every 2 attempts, not every attempt
       lcd.setCursor(0, 0);
@@ -274,7 +233,6 @@ void setup() {
       lcd.setCursor((wifiAttempts / 2) % 16, 1);
       lcd.print(".");
     }
->>>>>>> bff27a1 (update project)
     Serial.print(".");
     wifiAttempts++;
   }
@@ -327,22 +285,14 @@ void setup() {
 //                          Loop
 // ============================================================
 void loop() {
-<<<<<<< HEAD
-  if (millis() - lastNtpUpdate > NTP_UPDATE_INTERVAL_MS || lastNtpUpdate == 0) {
-    timeClient.update();
-    lastNtpUpdate = millis();
-  }
-
-=======
   unsigned long now = millis();
-  
+
   // Update NTP time only every 30 seconds, not every loop iteration
   if (now - lastNTPUpdate > NTP_UPDATE_INTERVAL) {
     timeClient.update();
     lastNTPUpdate = now;
   }
-  
->>>>>>> bff27a1 (update project)
+
   unsigned long epoch = timeClient.getEpochTime();
   String currentTime  = iso8601FromEpoch(epoch);
 
@@ -351,14 +301,6 @@ void loop() {
   }
 
   // Return to the default screen once a message has been shown long enough
-<<<<<<< HEAD
-  if (displayTimeout > 0 && millis() > displayTimeout) {
-    displayTimeout = 0;
-    showDefaultScreen();
-  }
-
-  delay(10);  // small loop delay - was 100; buttons feel much more responsive now
-=======
   if (displayTimeout > 0 && now > displayTimeout) {
     displayTimeout = 0;
     showDefaultScreen();
@@ -366,5 +308,4 @@ void loop() {
   }
 
   delay(10);  // small loop delay - responsive button handling
->>>>>>> bff27a1 (update project)
 }
